@@ -562,8 +562,8 @@ panel_with_type create_water_leak(uint8_t index, lv_obj_t *parent)
 
     union_sensor.panel_type = WATER_LEAK_TYPE;
 
-    lv_obj_set_x(union_sensor.panel_union.door.ui_PanelSensorDoor, x_by_index(index));
-    lv_obj_set_y(union_sensor.panel_union.door.ui_PanelSensorDoor, y_by_index(index));
+    lv_obj_set_x(union_sensor.panel_union.water_leak.ui_PanelSensorWaterLeak, x_by_index(index));
+    lv_obj_set_y(union_sensor.panel_union.water_leak.ui_PanelSensorWaterLeak, y_by_index(index));
     
     return union_sensor;
 }
