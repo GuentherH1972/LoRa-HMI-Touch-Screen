@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "project",
-    "project_version":    "712cb84-dirty",
+    "project_version":    "197b5e5-dirty",
     "project_path":       "D:/main/Example/LoRaWAN_CLASS_C/LTS5_ESP32_PART",
     "idf_path":           "D:/espidf_IDE/Espressif/frameworks/esp-idf-v5.2.2",
     "build_dir":          "D:/main/Example/LoRaWAN_CLASS_C/LTS5_ESP32_PART/build",

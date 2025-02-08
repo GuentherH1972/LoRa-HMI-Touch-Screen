@@ -280,9 +280,9 @@ typedef struct
     uint8_t * dev_eui;
     uint8_t   mod;
 
-    uint8_t * temp1; 
-    uint8_t * temp2;
-    uint8_t * humidity; 
+    uint8_t * tem1; 
+    uint8_t * tem2;
+    uint8_t * hum; 
 
     uint8_t * status;
 

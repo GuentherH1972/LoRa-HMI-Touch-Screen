@@ -66,9 +66,9 @@ typedef struct {
 	uint8_t dev_eui[DEV_EUI_LEN];
 	uint8_t mod_type[MOD_TYPE_LEN];
 	uint8_t bat[BAT_LEN];
-	uint8_t temp1[TEMP1_LEN];
-	uint8_t temp2[TEMP2_LEN];
-	uint8_t humidity[HUMIDITY_LEN];
+	uint8_t tem1[TEMP1_LEN];
+	uint8_t tem2[TEMP2_LEN];
+	uint8_t hum[HUMIDITY_LEN];
 } TemHum_type; // data_format_type: 1
 
 typedef struct {
@@ -476,9 +476,9 @@ static void type_init(void *panel_pointer, uint8_t data_format_type, uint8_t pan
 			memset((void *)(panel->dev_eui), 0, sizeof(uint8_t)*DEV_EUI_LEN);
 			memset((void *)(panel->mod_type), panel_type, sizeof(uint8_t)*MOD_TYPE_LEN);
 			memset((void *)(panel->bat), 0, sizeof(uint8_t)*BAT_LEN);
-			memset((void *)(panel->temp1), 0, sizeof(uint8_t)*TEMP1_LEN);
-			memset((void *)(panel->temp2), 0, sizeof(uint8_t)*TEMP2_LEN);
-			memset((void *)(panel->humidity), 0, sizeof(uint8_t)*HUMIDITY_LEN);
+			memset((void *)(panel->tem1), 0, sizeof(uint8_t)*TEMP1_LEN);
+			memset((void *)(panel->tem2), 0, sizeof(uint8_t)*TEMP2_LEN);
+			memset((void *)(panel->hum), 0, sizeof(uint8_t)*HUMIDITY_LEN);
 			
 			break;
 		}
@@ -608,8 +608,8 @@ void esp_uart_task(void *arg)
 						}
 						else if(i >= left && i < right && flags[5] == 1) 
 						{
-							TemHum_panel.temp1[i - left] = data[i];
-							ESP_LOGI(TAG_MAIN, "temp1[%d]:%02X", i - left, TemHum_panel.temp1[i - left]);
+							TemHum_panel.tem1[i - left] = data[i];
+							ESP_LOGI(TAG_MAIN, "tem1[%d]:%02X", i - left, TemHum_panel.tem1[i - left]);
 							if(i == right - 1) 
 							{
 								left += TEMP1_LEN;
@@ -619,8 +619,8 @@ void esp_uart_task(void *arg)
 						}
 						else if(i >= left && i < right && flags[6] == 1) 
 						{
-							TemHum_panel.temp2[i - left] = data[i];
-							ESP_LOGI(TAG_MAIN, "temp2[%d]:%02X", i - left, TemHum_panel.temp2[i - left]);
+							TemHum_panel.tem2[i - left] = data[i];
+							ESP_LOGI(TAG_MAIN, "tem2[%d]:%02X", i - left, TemHum_panel.tem2[i - left]);
 							if(i == right - 1) 
 							{
 								left += TEMP2_LEN;
@@ -630,8 +630,8 @@ void esp_uart_task(void *arg)
 						}
 						else if(i >= left && i < right && flags[7] == 1) 
 						{
-							TemHum_panel.humidity[i - left] = data[i];
-							ESP_LOGI(TAG_MAIN, "humidity[%d]:%02X", i - left, TemHum_panel.humidity[i - left]);
+							TemHum_panel.hum[i - left] = data[i];
+							ESP_LOGI(TAG_MAIN, "hum[%d]:%02X", i - left, TemHum_panel.hum[i - left]);
 							if(i == right - 1) 
 							{
 								left = 0;
@@ -645,9 +645,9 @@ void esp_uart_task(void *arg)
 					mes.dev_name = TemHum_panel.dev_name;
 					mes.dev_eui = TemHum_panel.dev_eui;
 					mes.mod = TemHum_panel.mod_type[0];
-					mes.temp1 = TemHum_panel.temp1;
-					mes.temp2 = TemHum_panel.temp2;
-					mes.humidity = TemHum_panel.humidity;
+					mes.tem1 = TemHum_panel.tem1;
+					mes.tem2 = TemHum_panel.tem2;
+					mes.hum = TemHum_panel.hum;
 					mes.bat = TemHum_panel.bat;
 					mes.data_rssi = data_rssi;
 

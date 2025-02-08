@@ -1115,17 +1115,17 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
     printf("\r\n");
     for(int i = 0;i < strlen(dest1);i++) 
     {
-        ESP_LOGI(TAG_SORT, "dest1: %02X", dest1[i]);//\r\n  d
+        ESP_LOGI(TAG_SORT, "dest1: %02X", dest1[i]);
     }
 
     sprintf(dest2 + 0, "%02X", *(dest1 + 0));
     sprintf(dest2 + 2, "%02X", *(dest1 + 1));
     sprintf(dest2 + 4, "%02X", *(dest1 + 2));
-    ESP_LOGI(TAG_SORT, "dest2: %s", dest2);//\r\n
+    ESP_LOGI(TAG_SORT, "dest2: %s", dest2);
 
     printf("\r\n");
     
-    // refresh old panel
+    // refresh existing panel
     for(uint16_t i = 0;i < arr->size;i++) 
     {
         if(arr->array[i].panel_obj.panel_type != mes->mod) 
@@ -1133,20 +1133,27 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             continue;
         }
 
-        
         switch(mes->mod) 
         {
             case TEM_HUM_TYPE:
                 if(strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelNameTemHum), (char *)(mes->dev_name)) == 0 && strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelDevEUITemHum), dest2) == 0) 
-                { 
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelTemValueTemHum, "%.2f℃", ((double)(*(mes->temp1)) + (double)*((mes->temp1)+1)*256)/100.0); //set tem1  //采用小端模式存储数据
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelExtValueTemHum, "%.2f℃", ((double)(*(mes->temp2)) + (double)*((mes->temp2)+1)*256)/100.0); //set tem2
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelHumValueTemHum, "%.2f%%RH", ((double)(*(mes->humidity)) + (double)*((mes->humidity)+1)*256)/10.0); //set hum
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelBatteryTemHum, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.tem_hum.ui_SliderBatteryTemHum, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelSignalStrengthValueTemHum, "Rssi: %d", mes->data_rssi); //set signal strength label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.tem_hum.ui_SliderSignalStrengthTemHum, mes->data_rssi, LV_ANIM_OFF); //set signal strength slider
-                    arr->array[i].sec_arrive = get_sec(); //record arrive time
+                {
+                    double tem1 = ((double)(*(mes->tem1)) + (double)*((mes->tem1)+1)*256)/100.0;
+                    if(tem1 > 327.68 - 0.01) {
+                        tem1 = tem1 - 655.36;
+                    } 
+                    double tem2 = ((double)(*(mes->tem2)) + (double)*((mes->tem2)+1)*256)/100.0;
+                    if(tem2 > 327.68 - 0.01) {
+                        tem2 = tem2 - 655.36;
+                    } 
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelTemValueTemHum, "%.2f℃", tem1); // set tem1
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelExtValueTemHum, "%.2f℃", tem2); // set tem2
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelHumValueTemHum, "%.1f%%RH", ((double)(*(mes->hum)) + (double)*((mes->hum)+1)*256)/10.0); // set hum
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelBatteryTemHum, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.tem_hum.ui_SliderBatteryTemHum, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelSignalStrengthValueTemHum, "Rssi: %d", mes->data_rssi); // set signal strength label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.tem_hum.ui_SliderSignalStrengthTemHum, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
                 }
@@ -1154,7 +1161,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             case DOOR_TYPE:
                 if(strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.door.ui_LabelNameDoor), (char *)(mes->dev_name)) == 0 && strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.door.ui_LabelDevEUIDoor), dest2) == 0) 
                 {
-                    //set door_status
+                    // set door_status
                     if(*(mes->status) == DOOR_STATUS_OPEN) 
                     {
                         if(lv_obj_has_flag(arr->array[i].panel_obj.panel_union.door.ui_PanelCurrentStatusCloseDoor, LV_OBJ_FLAG_HIDDEN) == false)
@@ -1179,11 +1186,11 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                         }
                     }
                     
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.door.ui_LabelBatteryDoor, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.door.ui_SliderBatteryDoor, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.door.ui_LabelSignalStrengthValueDoor, "Rssi: %d", mes->data_rssi); //set signal strength label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.door.ui_SliderSignalStrengthDoor, mes->data_rssi, LV_ANIM_OFF); //set signal strength slider
-                    arr->array[i].sec_arrive = get_sec(); //record arrive time
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.door.ui_LabelBatteryDoor, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.door.ui_SliderBatteryDoor, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.door.ui_LabelSignalStrengthValueDoor, "Rssi: %d", mes->data_rssi); // set signal strength label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.door.ui_SliderSignalStrengthDoor, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
                 }
@@ -1191,7 +1198,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             case WATER_LEAK_TYPE:
                 if(strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.water_leak.ui_LabelNameWaterLeak), (char *)(mes->dev_name)) == 0 && strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.water_leak.ui_LabelDevEUIWaterLeak), dest2) == 0) 
                 {
-                    //set water_leak_status
+                    // set water_leak_status
                     if(*(mes->status) == WATER_LEAK_STATUS_NORMAL) 
                     {
                         if(lv_obj_has_flag(arr->array[i].panel_obj.panel_union.water_leak.ui_PanelCurrentStatusLeakingWaterLeak, LV_OBJ_FLAG_HIDDEN) == false)
@@ -1217,11 +1224,11 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                         }
                     }
                     
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.water_leak.ui_LabelBatteryWaterLeak, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.water_leak.ui_SliderBatteryWaterLeak, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.water_leak.ui_LabelSignalStrengthValueWaterLeak, "Rssi: %d", mes->data_rssi); //set signal strength label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.water_leak.ui_SliderSignalStrengthWaterLeak, mes->data_rssi, LV_ANIM_OFF); //set signal strength slider
-                    arr->array[i].sec_arrive = get_sec(); //record arrive time
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.water_leak.ui_LabelBatteryWaterLeak, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.water_leak.ui_SliderBatteryWaterLeak, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.water_leak.ui_LabelSignalStrengthValueWaterLeak, "Rssi: %d", mes->data_rssi); // set signal strength label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.water_leak.ui_SliderSignalStrengthWaterLeak, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
                 }
@@ -1229,7 +1236,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             case OCCUPIED_TYPE:
                 if(strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.occupied.ui_LabelNameOccupied), (char *)(mes->dev_name)) == 0 && strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.occupied.ui_LabelDevEUIOccupied), dest2) == 0) 
                 {
-                    //set occupied_status
+                    // set occupied_status
                     if(*(mes->status) == OCCUPIED_STATUS_FREE) 
                     {
                         if(lv_obj_has_flag(arr->array[i].panel_obj.panel_union.occupied.ui_LabelOccupiedOccupied, LV_OBJ_FLAG_HIDDEN) == false) 
@@ -1269,11 +1276,11 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                         }
                     }
                     
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.occupied.ui_LabelBatteryOccupied, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.occupied.ui_SliderBatteryOccupied, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.occupied.ui_LabelSignalStrengthValueOccupied, "Rssi: %d", mes->data_rssi); //set signal strength label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.occupied.ui_SliderSignalStrengthOccupied, mes->data_rssi, LV_ANIM_OFF); //set signal strength slider
-                    arr->array[i].sec_arrive = get_sec(); //record arrive time
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.occupied.ui_LabelBatteryOccupied, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.occupied.ui_SliderBatteryOccupied, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.occupied.ui_LabelSignalStrengthValueOccupied, "Rssi: %d", mes->data_rssi); // set signal strength label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.occupied.ui_SliderSignalStrengthOccupied, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
                 }
@@ -1281,7 +1288,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             case BUTTON_TYPE:
                 if(strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.button.ui_LabelNameButton), (char *)(mes->dev_name)) == 0 && strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.button.ui_LabelDevEUIButton), dest2) == 0) 
                 {
-                    //set button_status
+                    // set button_status
                     if(*(mes->status) == BUTTON_STATUS_OFF) 
                     {
                         if(lv_obj_has_flag(arr->array[i].panel_obj.panel_union.button.ui_LabelButtonONButton, LV_OBJ_FLAG_HIDDEN) == false) 
@@ -1313,11 +1320,11 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                         }
                     }
                     
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.button.ui_LabelBatteryButton, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.button.ui_SliderBatteryButton, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.button.ui_LabelSignalStrengthValueButton, "Rssi: %d", mes->data_rssi); //set signal strength label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.button.ui_SliderSignalStrengthButton, mes->data_rssi, LV_ANIM_OFF); //set signal strength slider
-                    arr->array[i].sec_arrive = get_sec(); //record arrive time
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.button.ui_LabelBatteryButton, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.button.ui_SliderBatteryButton, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.button.ui_LabelSignalStrengthValueButton, "Rssi: %d", mes->data_rssi); // set signal strength label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.button.ui_SliderSignalStrengthButton, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
                 }
@@ -1326,7 +1333,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             case ALARM_TYPE:
                 if(strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.alarm.ui_LabelNameAlarm), (char *)(mes->dev_name)) == 0 && strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.alarm.ui_LabelDevEUIAlarm), dest2) == 0) 
                 {
-                    //set alarm_status
+                    // set alarm_status
                     if(*(mes->status) == ALARM_STATUS_ALARM) 
                     {
                         arr->array[arr->size - 1].panel_obj.panel_union.alarm.timer_alarm_en_flag = ALARM_TIMER_ENABLE;
@@ -1335,11 +1342,11 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                     {
                         arr->array[arr->size - 1].panel_obj.panel_union.alarm.timer_alarm_en_flag = ALARM_TIMER_DISABLE;
                     }
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.alarm.ui_LabelBatteryAlarm, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.alarm.ui_SliderBatteryAlarm, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
-                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.alarm.ui_LabelSignalStrengthValueAlarm, "Rssi: %d", mes->data_rssi); //set signal strength label
-                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.alarm.ui_SliderSignalStrengthAlarm, mes->data_rssi, LV_ANIM_OFF); //set signal strength slider
-                    arr->array[i].sec_arrive = get_sec(); //record arrive time
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.alarm.ui_LabelBatteryAlarm, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.alarm.ui_SliderBatteryAlarm, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.alarm.ui_LabelSignalStrengthValueAlarm, "Rssi: %d", mes->data_rssi); // set signal strength label
+                    lv_slider_set_value(arr->array[i].panel_obj.panel_union.alarm.ui_SliderSignalStrengthAlarm, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
                 }
@@ -1354,25 +1361,33 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
     switch(mes->mod) 
     {
         case TEM_HUM_TYPE:
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelNameTemHum,"%s", (char *)(mes->dev_name)); //set dev_name
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelDevEUITemHum,"%s", dest2); //set dev_eui
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelNameTemHum,"%s", (char *)(mes->dev_name)); // set dev_name
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelDevEUITemHum,"%s", dest2); // set dev_eui
             
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelTemValueTemHum, "%.2f℃", ((double)(*(mes->temp1)) + (double)*((mes->temp1) + 1)*256)/100.0); //set tem1  //采用小端模式存储数据，由于空了2个字节，所以数据是像这样的 7F FF 00 00
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelExtValueTemHum, "%.2f℃", ((double)(*(mes->temp2)) + (double)*((mes->temp2) + 1)*256)/100.0); //set tem2
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelHumValueTemHum, "%.2f%%RH", ((double)(*(mes->humidity)) + (double)*((mes->humidity) + 1)*256)/10.0); //set hum
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelBatteryTemHum, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_SliderBatteryTemHum, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelSignalStrengthValueTemHum, "Rssi: %d", mes->data_rssi); //set signal strength label
-            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_SliderSignalStrengthTemHum, mes->data_rssi, LV_ANIM_OFF); //set signal strength slider
-            arr->array[arr->size - 1].sec_arrive = get_sec(); //record arrive time
-            NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);//0
+            double tem1 = ((double)(*(mes->tem1)) + (double)*((mes->tem1) + 1)*256)/100.0;
+            if(tem1 > 327.68 - 0.01) {
+                tem1 = tem1 - 655.36;
+            } 
+            double tem2 = ((double)(*(mes->tem2)) + (double)*((mes->tem2) + 1)*256)/100.0;
+            if(tem2 > 327.68 - 0.01) {
+                tem2 = tem2 - 655.36;
+            } 
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelTemValueTemHum, "%.2f℃", tem1); // set tem1
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelExtValueTemHum, "%.2f℃", tem2); // set tem2
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelHumValueTemHum, "%.1f%%RH", ((double)(*(mes->hum)) + (double)*((mes->hum) + 1)*256)/10.0); // set hum
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelBatteryTemHum, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_SliderBatteryTemHum, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelSignalStrengthValueTemHum, "Rssi: %d", mes->data_rssi); // set signal strength label
+            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_SliderSignalStrengthTemHum, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+            arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
+            NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);
+            
             break;
-
         case DOOR_TYPE:
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_LabelNameDoor,"%s", (char *)(mes->dev_name)); //set dev_name
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_LabelDevEUIDoor,"%s", dest2); //set dev_eui
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_LabelNameDoor,"%s", (char *)(mes->dev_name)); // set dev_name
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_LabelDevEUIDoor,"%s", dest2); // set dev_eui
 
-            //set door_status
+            // set door_status
             if(*(mes->status) == DOOR_STATUS_OPEN) 
             {
                 if(lv_obj_has_flag(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_PanelCurrentStatusCloseDoor, LV_OBJ_FLAG_HIDDEN) == false)
@@ -1396,18 +1411,18 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                 }
             }
 
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_LabelBatteryDoor, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_SliderBatteryDoor, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_LabelBatteryDoor, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_SliderBatteryDoor, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
             lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_LabelSignalStrengthValueDoor, "Rssi: %d", mes->data_rssi);
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_SliderSignalStrengthDoor, mes->data_rssi, LV_ANIM_OFF);
-            arr->array[arr->size - 1].sec_arrive = get_sec();
-            NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);//0
+            arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
+            NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);
             break;
         case WATER_LEAK_TYPE:
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_LabelNameWaterLeak,"%s", (char *)(mes->dev_name)); //set dev_name
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_LabelDevEUIWaterLeak,"%s", dest2); //set dev_eui
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_LabelNameWaterLeak,"%s", (char *)(mes->dev_name)); // set dev_name
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_LabelDevEUIWaterLeak,"%s", dest2); // set dev_eui
             
-            //set water_leak_status
+            // set water_leak_status
             if(*(mes->status) == WATER_LEAK_STATUS_NORMAL) 
             {
                 if(lv_obj_has_flag(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_PanelCurrentStatusLeakingWaterLeak, LV_OBJ_FLAG_HIDDEN) == false)
@@ -1431,19 +1446,19 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                 }
             }
             
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_LabelBatteryWaterLeak, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_SliderBatteryWaterLeak, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_LabelSignalStrengthValueWaterLeak, "Rssi: %d", mes->data_rssi); //set signal strength label
-            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_SliderSignalStrengthWaterLeak, mes->data_rssi, LV_ANIM_OFF); //set signal strength slider
-            arr->array[arr->size - 1].sec_arrive = get_sec(); //record arrive time
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_LabelBatteryWaterLeak, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_SliderBatteryWaterLeak, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_LabelSignalStrengthValueWaterLeak, "Rssi: %d", mes->data_rssi); // set signal strength label
+            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_SliderSignalStrengthWaterLeak, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+            arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
             NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);
 
             break;
         case OCCUPIED_TYPE:
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_LabelNameOccupied,"%s", (char *)(mes->dev_name)); //set dev_name
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_LabelDevEUIOccupied,"%s", dest2); //set dev_eui
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_LabelNameOccupied,"%s", (char *)(mes->dev_name)); // set dev_name
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_LabelDevEUIOccupied,"%s", dest2); // set dev_eui
             
-            //set occupied_status
+            // set occupied_status
             if(*(mes->status) == OCCUPIED_STATUS_FREE) 
             {
                 if(lv_obj_has_flag(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_LabelOccupiedOccupied, LV_OBJ_FLAG_HIDDEN) == false) 
@@ -1483,20 +1498,19 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                 }
             }
             
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_LabelBatteryOccupied, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_SliderBatteryOccupied, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_LabelSignalStrengthValueOccupied, "Rssi: %d", mes->data_rssi); //set signal strength label
-            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_SliderSignalStrengthOccupied, mes->data_rssi, LV_ANIM_OFF); //set signal strength slider
-            arr->array[arr->size - 1].sec_arrive = get_sec(); //record arrive time
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_LabelBatteryOccupied, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_SliderBatteryOccupied, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_LabelSignalStrengthValueOccupied, "Rssi: %d", mes->data_rssi); // set signal strength label
+            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_SliderSignalStrengthOccupied, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+            arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
             NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);
-
 
             break;
         case BUTTON_TYPE:
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_LabelNameButton,"%s", (char *)(mes->dev_name)); //set dev_name
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_LabelDevEUIButton,"%s", dest2); //set dev_eui
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_LabelNameButton,"%s", (char *)(mes->dev_name)); // set dev_name
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_LabelDevEUIButton,"%s", dest2); // set dev_eui
             
-            //set button_status
+            // set button_status
             if(*(mes->status) == BUTTON_STATUS_OFF) 
             {
                 if(lv_obj_has_flag(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_LabelButtonONButton, LV_OBJ_FLAG_HIDDEN) == false) 
@@ -1528,20 +1542,19 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                 }
             }
             
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_LabelBatteryButton, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_SliderBatteryButton, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_LabelSignalStrengthValueButton, "Rssi: %d", mes->data_rssi); //set signal strength label
-            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_SliderSignalStrengthButton, mes->data_rssi, LV_ANIM_OFF); //set signal strength slider
-            arr->array[arr->size - 1].sec_arrive = get_sec(); //record arrive time
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_LabelBatteryButton, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_SliderBatteryButton, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_LabelSignalStrengthValueButton, "Rssi: %d", mes->data_rssi); // set signal strength label
+            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_SliderSignalStrengthButton, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+            arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
             NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);
 
             break;
-
         case ALARM_TYPE:
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_LabelNameAlarm,"%s", (char *)(mes->dev_name)); //set dev_name
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_LabelDevEUIAlarm,"%s", dest2); //set dev_eui
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_LabelNameAlarm,"%s", (char *)(mes->dev_name)); // set dev_name
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_LabelDevEUIAlarm,"%s", dest2); // set dev_eui
             
-            //set alarm_status
+            // set alarm_status
             if(*(mes->status) == ALARM_STATUS_ALARM) 
             {
                 arr->array[arr->size - 1].panel_obj.panel_union.alarm.timer_alarm_en_flag = ALARM_TIMER_ENABLE;
@@ -1550,13 +1563,13 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             {
                 arr->array[arr->size - 1].panel_obj.panel_union.alarm.timer_alarm_en_flag = ALARM_TIMER_DISABLE;
             }
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_LabelBatteryAlarm, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); //set bat label
-            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_SliderBatteryAlarm, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); //set bat slider
-            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_LabelSignalStrengthValueAlarm, "Rssi: %d", mes->data_rssi); //set signal strength label
-            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_SliderSignalStrengthAlarm, mes->data_rssi, LV_ANIM_OFF); //set signal strength slider
-            arr->array[arr->size - 1].sec_arrive = get_sec(); //record arrive time
-            // lv_label_set_text_fmt(ui_ContainerNewMessageNotice, "sss");//Panel Alarm Added
-            NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000); // 动画的播放需要延时一定的时间，否则动画无法完整显示，若不等待这段时间则动画会被当前忙碌的LVGL定时执行任务所搁置，导致只显示出动画的最后一点便迅速结束了
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_LabelBatteryAlarm, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
+            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_SliderBatteryAlarm, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_LabelSignalStrengthValueAlarm, "Rssi: %d", mes->data_rssi); // set signal strength label
+            lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_SliderSignalStrengthAlarm, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+            arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
+            
+            NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000); 
 
             break;
     }

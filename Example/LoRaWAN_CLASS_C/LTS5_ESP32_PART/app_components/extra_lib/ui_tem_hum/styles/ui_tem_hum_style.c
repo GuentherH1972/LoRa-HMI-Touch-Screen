@@ -252,7 +252,7 @@ panel_with_type create_tem_hum(uint8_t index, lv_obj_t *parent)
     ui_PanelTemTemHum = lv_obj_create(ui_PanelSensorNodeTemHum);
     lv_obj_set_width(ui_PanelTemTemHum, 50);
     lv_obj_set_height(ui_PanelTemTemHum, 27);
-    lv_obj_set_x(ui_PanelTemTemHum, -54);
+    lv_obj_set_x(ui_PanelTemTemHum, -51);//-54 -48 -50
     lv_obj_set_y(ui_PanelTemTemHum, 45);
     lv_obj_set_align(ui_PanelTemTemHum, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_PanelTemTemHum, LV_OBJ_FLAG_EVENT_BUBBLE);     /// Flags
@@ -288,7 +288,7 @@ panel_with_type create_tem_hum(uint8_t index, lv_obj_t *parent)
     ui_PanelHumTemHum = lv_obj_create(ui_PanelSensorNodeTemHum);
     lv_obj_set_width(ui_PanelHumTemHum, 65);
     lv_obj_set_height(ui_PanelHumTemHum, 28);
-    lv_obj_set_x(ui_PanelHumTemHum, 7);
+    lv_obj_set_x(ui_PanelHumTemHum, 5);//7
     lv_obj_set_y(ui_PanelHumTemHum, 43);
     lv_obj_set_align(ui_PanelHumTemHum, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_PanelHumTemHum, LV_OBJ_FLAG_EVENT_BUBBLE);     /// Flags
@@ -322,7 +322,7 @@ panel_with_type create_tem_hum(uint8_t index, lv_obj_t *parent)
     lv_obj_set_x(ui_LabelHumValueTemHum, 0);
     lv_obj_set_y(ui_LabelHumValueTemHum, 7);
     lv_obj_set_align(ui_LabelHumValueTemHum, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_LabelHumValueTemHum, "00.00%RH");
+    lv_label_set_text(ui_LabelHumValueTemHum, "00.0%RH");
     lv_obj_set_style_text_color(ui_LabelHumValueTemHum, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelHumValueTemHum, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelHumValueTemHum, &ui_font_Font12, LV_PART_MAIN | LV_STATE_DEFAULT);
