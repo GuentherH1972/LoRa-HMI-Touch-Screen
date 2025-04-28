@@ -96,7 +96,7 @@ void lv_port_disp_init(void)
             .h_res = LCD_WIDTH, .v_res = LCD_HEIGHT,
     // The following parameters should refer to LCD spec
 #if ((LCD_5r0_800x480==1)||(LCD_4r3_800x480==1))
-            .pclk_hz = 145 * 100 * 1000,
+            .pclk_hz = 160 * 100 * 1000, // If the screen cannot be lit normally, the pclk needs to be increased, with 0.5MHz as a step. But the pclk can't be too high, or the picture will tear.
             .hsync_back_porch = 42,
             .hsync_front_porch = 20,
             .hsync_pulse_width = 1,

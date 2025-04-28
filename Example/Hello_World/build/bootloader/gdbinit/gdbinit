@@ -1,0 +1,2 @@
+source D:/main/Example/Hello_World/build/bootloader/gdbinit/symbols
+source D:/main/Example/Hello_World/build/bootloader/gdbinit/connect

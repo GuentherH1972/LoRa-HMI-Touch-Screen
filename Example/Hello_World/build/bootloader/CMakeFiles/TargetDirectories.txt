@@ -4,8 +4,6 @@ D:/main/Example/Hello_World/build/bootloader/CMakeFiles/save-defconfig.dir
 D:/main/Example/Hello_World/build/bootloader/CMakeFiles/gen_project_binary.dir
 D:/main/Example/Hello_World/build/bootloader/CMakeFiles/app.dir
 D:/main/Example/Hello_World/build/bootloader/CMakeFiles/erase_flash.dir
-D:/main/Example/Hello_World/build/bootloader/CMakeFiles/uf2.dir
-D:/main/Example/Hello_World/build/bootloader/CMakeFiles/uf2-app.dir
 D:/main/Example/Hello_World/build/bootloader/CMakeFiles/monitor.dir
 D:/main/Example/Hello_World/build/bootloader/CMakeFiles/_project_elf_src.dir
 D:/main/Example/Hello_World/build/bootloader/CMakeFiles/bootloader.elf.dir
@@ -15,6 +13,8 @@ D:/main/Example/Hello_World/build/bootloader/CMakeFiles/size-components.dir
 D:/main/Example/Hello_World/build/bootloader/CMakeFiles/dfu.dir
 D:/main/Example/Hello_World/build/bootloader/CMakeFiles/dfu-list.dir
 D:/main/Example/Hello_World/build/bootloader/CMakeFiles/dfu-flash.dir
+D:/main/Example/Hello_World/build/bootloader/CMakeFiles/uf2.dir
+D:/main/Example/Hello_World/build/bootloader/CMakeFiles/uf2-app.dir
 D:/main/Example/Hello_World/build/bootloader/CMakeFiles/edit_cache.dir
 D:/main/Example/Hello_World/build/bootloader/CMakeFiles/rebuild_cache.dir
 D:/main/Example/Hello_World/build/bootloader/esp-idf/CMakeFiles/edit_cache.dir

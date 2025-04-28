@@ -11,7 +11,7 @@
 
  * Automatically generated file. DO NOT EDIT.
 
- * Espressif IoT Development Framework (ESP-IDF) 5.2.2 Configuration Header
+ * Espressif IoT Development Framework (ESP-IDF) 5.2.5 Configuration Header
 
  */
        
@@ -33,7 +33,7 @@ SECTIONS
     . = ALIGN(4);
     _rtc_fast_start = ABSOLUTE(.);
     _rtc_text_start = ABSOLUTE(.);
-    *(.rtc.entry.text)
+    *(.rtc.entry.literal .rtc.entry.text)
     mapping[rtc_text]
     *rtc_wake_stub*.*(.literal .text .literal.* .text.*)
     *(.rtc_text_end_test)
@@ -195,6 +195,7 @@ SECTIONS
     *(.UserEnter.literal);
     *(.UserEnter.text);
     . = ALIGN (16);
+    *(.entry.literal)
     *(.entry.text)
     *(.init.literal)
     *(.init)
@@ -466,33 +467,71 @@ SECTIONS
     /* Lowest possible start address for the heap */
     _heap_low_start = ABSOLUTE(.);
   } > dram0_0_seg
-  /** This section will be used by the debugger and disassembler to get more information
+  /* DWARF 1 */
+  .debug 0 : { *(.debug) }
+  .line 0 : { *(.line) }
+  /* GNU DWARF 1 extensions */
+  .debug_srcinfo 0 : { *(.debug_srcinfo) }
+  .debug_sfnames 0 : { *(.debug_sfnames) }
+  /* DWARF 1.1 and DWARF 2 */
+  .debug_aranges 0 : { *(.debug_aranges) }
+  .debug_pubnames 0 : { *(.debug_pubnames) }
+  /* DWARF 2 */
+  .debug_info 0 : { *(.debug_info .gnu.linkonce.wi.*) }
+  .debug_abbrev 0 : { *(.debug_abbrev) }
+  .debug_line 0 : { *(.debug_line) }
+  .debug_frame 0 : { *(.debug_frame) }
+  .debug_str 0 : { *(.debug_str) }
+  .debug_loc 0 : { *(.debug_loc) }
+  .debug_macinfo 0 : { *(.debug_macinfo) }
+  .debug_pubtypes 0 : { *(.debug_pubtypes) }
+  /* DWARF 3 */
+  .debug_ranges 0 : { *(.debug_ranges) }
+  /* SGI/MIPS DWARF 2 extensions */
+  .debug_weaknames 0 : { *(.debug_weaknames) }
+  .debug_funcnames 0 : { *(.debug_funcnames) }
+  .debug_typenames 0 : { *(.debug_typenames) }
+  .debug_varnames 0 : { *(.debug_varnames) }
+  /* GNU DWARF 2 extensions */
+  .debug_gnu_pubnames 0 : { *(.debug_gnu_pubnames) }
+  .debug_gnu_pubtypes 0 : { *(.debug_gnu_pubtypes) }
+  /* DWARF 4 */
+  .debug_types 0 : { *(.debug_types) }
+  /* DWARF 5 */
+  .debug_addr 0 : { *(.debug_addr) }
+  .debug_line_str 0 : { *(.debug_line_str) }
+  .debug_loclists 0 : { *(.debug_loclists) }
+  .debug_macro 0 : { *(.debug_macro) }
+  .debug_names 0 : { *(.debug_names) }
+  .debug_rnglists 0 : { *(.debug_rnglists) }
+  .debug_str_offsets 0 : { *(.debug_str_offsets) }
+  .comment 0 : { *(.comment) }
+  .note.GNU-stack 0: { *(.note.GNU-stack) }
+/**
 
-    * about raw data present in the code.
+ * .xt.prop and .xt.lit sections will be used by the debugger and disassembler
 
-    * Indeed, it may be required to add some padding at some points in the code
+ * to get more information about raw data present in the code.
 
-    * in order to align a branch/jump destination on a particular bound.
+ * Indeed, it may be required to add some padding at some points in the code
 
-    * Padding these instructions will generate null bytes that shall be
+ * in order to align a branch/jump destination on a particular bound.
 
-    * interpreted as data, and not code by the debugger or disassembler.
+ * Padding these instructions will generate null bytes that shall be
 
-    * This section will only be present in the ELF file, not in the final binary
+ * interpreted as data, and not code by the debugger or disassembler.
 
-    * For more details, check GCC-212
+ * This section will only be present in the ELF file, not in the final binary
 
-    */
-  .xt.prop 0 :
-  {
-    KEEP (*(.xt.prop .xt.prop.* .gnu.linkonce.prop.*))
-  }
-  .xt.lit 0 :
-  {
-    KEEP (*(.xt.lit .xt.lit.* .gnu.linkonce.p.*))
-  }
+ * For more details, check GCC-212
+
+ */
+  .xtensa.info 0: { *(.xtensa.info) }
+  .xt.prop 0 : { *(.xt.prop .xt.prop.* .gnu.linkonce.prop.*) }
+  .xt.lit 0 : { *(.xt.lit .xt.lit.* .gnu.linkonce.p.*) }
   /DISCARD/ :
   {
+   *(.fini)
    *(.eh_frame_hdr)
    *(.eh_frame)
   }

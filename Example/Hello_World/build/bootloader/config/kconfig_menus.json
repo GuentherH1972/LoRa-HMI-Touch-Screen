@@ -4957,6 +4957,67 @@
                 "type": "bool"
             },
             {
+                "children": [
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "<choice SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH>",
+                                "help": null,
+                                "id": "SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH_LOW",
+                                "name": "SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH_LOW",
+                                "range": null,
+                                "title": "Low",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH>",
+                                "help": null,
+                                "id": "SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH_MEDIUM",
+                                "name": "SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH_MEDIUM",
+                                "range": null,
+                                "title": "Medium",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH>",
+                                "help": null,
+                                "id": "SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH_HIGH",
+                                "name": "SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH_HIGH",
+                                "range": null,
+                                "title": "High",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": "SECURE_FLASH_PSEUDO_ROUND_FUNC",
+                        "help": "The strength of the pseudo rounds functions can be configured to low, medium and high,\neach denoting the values that would be stored in the efuses field.\nBy default the value to set to low.\nYou can configure the strength of the pseudo rounds functions according to your use cases,\nfor example, increasing the strength would provide higher security but would slow down the\nflash encryption/decryption operations.\nFor more info regarding the performance impact, please checkout the pseudo round function section of the\nsecurity guide documentation.",
+                        "id": "security-features-permanently-enable-xts-aes-s-pseudo-rounds-function-strength-of-the-pseudo-rounds-function",
+                        "name": "SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH",
+                        "title": "Strength of the pseudo rounds function",
+                        "type": "choice"
+                    }
+                ],
+                "depends_on": "SECURE_FLASH_ENCRYPTION_MODE_RELEASE && SOC_FLASH_ENCRYPTION_XTS_AES_SUPPORT_PSEUDO_ROUND",
+                "help": "If set (default), the bootloader will permanently enable the XTS-AES peripheral's pseudo rounds function.\nNote: Enabling this config would burn an efuse.",
+                "id": "SECURE_FLASH_PSEUDO_ROUND_FUNC",
+                "name": "SECURE_FLASH_PSEUDO_ROUND_FUNC",
+                "range": null,
+                "title": "Permanently enable XTS-AES's pseudo rounds function",
+                "type": "bool"
+            },
+            {
+                "children": [],
+                "depends_on": null,
+                "help": null,
+                "id": "SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH",
+                "name": "SECURE_FLASH_PSEUDO_ROUND_FUNC_STRENGTH",
+                "range": null,
+                "title": null,
+                "type": "int"
+            },
+            {
                 "children": [],
                 "depends_on": null,
                 "help": null,
@@ -6245,6 +6306,16 @@
             },
             {
                 "children": [],
+                "depends_on": "IDF_TOOLCHAIN_GCC",
+                "help": "Disable merging identical constants (string/floating-point) across compilation units.\nThis helps in better size analysis of the application binary as the rodata section\ndistribution is more uniform across libraries. On downside, it may increase\nthe binary size and hence should be used during development phase only.",
+                "id": "COMPILER_NO_MERGE_CONSTANTS",
+                "name": "COMPILER_NO_MERGE_CONSTANTS",
+                "range": null,
+                "title": "Disable merging const sections",
+                "type": "bool"
+            },
+            {
+                "children": [],
                 "depends_on": null,
                 "help": "Adds -Wwrite-strings flag for the C/C++ compilers.\n\nFor C, this gives string constants the type ``const char[]`` so that\ncopying the address of one into a non-const ``char *`` pointer\nproduces a warning. This warning helps to find at compile time code\nthat tries to write into a string constant.\n\nFor C++, this warns about the deprecated conversion from string\nliterals to ``char *``.",
                 "id": "COMPILER_WARN_WRITE_STRINGS",
@@ -6342,6 +6413,36 @@
                 "range": null,
                 "title": null,
                 "type": "string"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "depends_on": "<choice COMPILER_ORPHAN_SECTIONS>",
+                        "help": "Places orphan sections with a warning message.",
+                        "id": "COMPILER_ORPHAN_SECTIONS_WARNING",
+                        "name": "COMPILER_ORPHAN_SECTIONS_WARNING",
+                        "range": null,
+                        "title": "Place with warning",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice COMPILER_ORPHAN_SECTIONS>",
+                        "help": "Places orphan sections without a warning/error message.",
+                        "id": "COMPILER_ORPHAN_SECTIONS_PLACE",
+                        "name": "COMPILER_ORPHAN_SECTIONS_PLACE",
+                        "range": null,
+                        "title": "Place silently",
+                        "type": "bool"
+                    }
+                ],
+                "depends_on": "!IDF_TARGET_LINUX",
+                "help": "If the linker finds orphan sections, it attempts to place orphan sections after sections of the same\nattribute such as code vs data, loadable vs non-loadable, etc.\nThat means that orphan sections could placed between sections defined in IDF linker scripts.\nThis could lead to corruption of the binary image. Configure the linker action here.",
+                "id": "compiler-options-orphan-sections-handling",
+                "name": "COMPILER_ORPHAN_SECTIONS",
+                "title": "Orphan sections handling",
+                "type": "choice"
             }
         ],
         "depends_on": null,
@@ -6575,6 +6676,26 @@
                             },
                             {
                                 "children": [],
+                                "depends_on": null,
+                                "help": "Required minimum eFuse Block revision. ESP-IDF will check it at the 2nd bootloader stage\nwhether the current image can work correctly for this eFuse Block revision.\nSo that to avoid running an incompatible image on a SoC that contains breaking change in the eFuse Block.\nIf you want to update this value to run the image that not compatible with the current eFuse Block revision,\nplease contact to Espressif's business team for details:\nhttps://www.espressif.com.cn/en/contact-us/sales-questions",
+                                "id": "ESP_EFUSE_BLOCK_REV_MIN_FULL",
+                                "name": "ESP_EFUSE_BLOCK_REV_MIN_FULL",
+                                "range": null,
+                                "title": "Minimum Supported ESP32-S3 eFuse Block Revision",
+                                "type": "int"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": null,
+                                "help": null,
+                                "id": "ESP_EFUSE_BLOCK_REV_MAX_FULL",
+                                "name": "ESP_EFUSE_BLOCK_REV_MAX_FULL",
+                                "range": null,
+                                "title": null,
+                                "type": "int"
+                            },
+                            {
+                                "children": [],
                                 "depends_on": "IDF_CI_BUILD",
                                 "help": "For internal chip testing, a small number of new versions chips didn't\nupdate the version field in eFuse, you can enable this option to force the\nsoftware recognize the chip version based on the rev selected in menuconfig.",
                                 "id": "ESP_REV_NEW_CHIP_TEST",
@@ -6751,7 +6872,7 @@
                             },
                             {
                                 "children": [],
-                                "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP && !ESP_SLEEP_POWER_DOWN_FLASH",
+                                "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": "All IOs will be set to isolate(floating) state by default during sleep.\nSince the power supply of SPI Flash is not lost during lightsleep, if its CS pin is recognized as\nlow level(selected state) in the floating state, there will be a large current leakage, and the\ndata in Flash may be corrupted by random signals on other SPI pins.\nSelect this option will set the CS pin of Flash to PULL-UP state during sleep, but this will\nincrease the sleep current about 10 uA.\nIf you are developing with esp32xx modules, you must select this option, but if you are developing\nwith chips, you can also pull up the CS pin of SPI Flash in the external circuit to save power\nconsumption caused by internal pull-up during sleep.\n(!!! Don't deselect this option if you don't have external SPI Flash CS pin pullups.)",
                                 "id": "ESP_SLEEP_FLASH_LEAKAGE_WORKAROUND",
                                 "name": "ESP_SLEEP_FLASH_LEAKAGE_WORKAROUND",
@@ -6771,7 +6892,7 @@
                             },
                             {
                                 "children": [],
-                                "depends_on": "!ESP_SLEEP_POWER_DOWN_FLASH && (ESP_SLEEP_PSRAM_LEAKAGE_WORKAROUND || ESP_SLEEP_FLASH_LEAKAGE_WORKAROUND)",
+                                "depends_on": "ESP_SLEEP_PSRAM_LEAKAGE_WORKAROUND || ESP_SLEEP_FLASH_LEAKAGE_WORKAROUND",
                                 "help": "To reduce leakage current, some types of SPI Flash/RAM only need to pull up the CS pin\nduring light sleep. But there are also some kinds of SPI Flash/RAM that need to pull up\nall pins. It depends on the SPI Flash/RAM chip used.",
                                 "id": "ESP_SLEEP_MSPI_NEED_ALL_IO_PU",
                                 "name": "ESP_SLEEP_MSPI_NEED_ALL_IO_PU",
@@ -6856,24 +6977,6 @@
                         "depends_on": null,
                         "id": "component-config-hardware-settings-sleep-config",
                         "title": "Sleep Config",
-                        "type": "menu"
-                    },
-                    {
-                        "children": [
-                            {
-                                "children": [],
-                                "depends_on": "IDF_TARGET_ESP32C3",
-                                "help": "Its not able to stall ESP32C3 systimer in sleep.\nTo fix related RTOS TICK issue, select it to disable related systimer during sleep.\nTODO: IDF-7036",
-                                "id": "ESP_SLEEP_SYSTIMER_STALL_WORKAROUND",
-                                "name": "ESP_SLEEP_SYSTIMER_STALL_WORKAROUND",
-                                "range": null,
-                                "title": "ESP32C3 SYSTIMER Stall Issue Workaround",
-                                "type": "bool"
-                            }
-                        ],
-                        "depends_on": null,
-                        "id": "component-config-hardware-settings-esp_sleep_workaround",
-                        "title": "ESP_SLEEP_WORKAROUND",
                         "type": "menu"
                     },
                     {
@@ -7167,6 +7270,16 @@
                         "id": "component-config-hardware-settings-crypto-dpa-protection",
                         "title": "Crypto DPA Protection",
                         "type": "menu"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "SOC_ECC_CONSTANT_TIME_POINT_MUL",
+                        "help": "If enabled, the app startup code will burn the ECC_FORCE_CONST_TIME efuse bit to force the\nECC peripheral to always perform constant time point multiplication operations,\nirrespective of the ECC_MULT_SECURITY_MODE status bit that is present in the ECC_MULT_CONF_REG\nregister. By default, ESP-IDF configures the ECC peripheral to perform constant time point\nmultiplication operations, so enabling this config would provide security enhancement only in\nthe cases when trusted boot is not enabled and the attacker tries carrying out non-constant\ntime point multiplication operations by changing the default ESP-IDF configurations.\nPerforming constant time operations protect the ECC multiplication operations from timing attacks.",
+                        "id": "ESP_CRYPTO_FORCE_ECC_CONSTANT_TIME_POINT_MUL",
+                        "name": "ESP_CRYPTO_FORCE_ECC_CONSTANT_TIME_POINT_MUL",
+                        "range": null,
+                        "title": "Forcefully enable ECC constant time point multiplication operations",
+                        "type": "bool"
                     },
                     {
                         "children": [],
@@ -8229,7 +8342,7 @@
                                 "type": "bool"
                             }
                         ],
-                        "depends_on": "!IDF_TARGET_ESP32 && (ESP_SYSTEM_RTC_EXT_OSC || ESP_SYSTEM_RTC_EXT_XTAL)",
+                        "depends_on": "SOC_XT_WDT_SUPPORTED && (ESP_SYSTEM_RTC_EXT_OSC || ESP_SYSTEM_RTC_EXT_XTAL)",
                         "help": "This watchdog timer can detect oscillation failure of the XTAL32K_CLK. When such a failure\nis detected the hardware can be set up to automatically switch to BACKUP32K_CLK and generate\nan interrupt.",
                         "id": "ESP_XT_WDT",
                         "name": "ESP_XT_WDT",
@@ -8650,53 +8763,64 @@
                                 "type": "bool"
                             },
                             {
-                                "children": [],
+                                "children": [
+                                    {
+                                        "children": [],
+                                        "depends_on": "FREERTOS_USE_TIMERS",
+                                        "help": "Sets the timer task's name (see configTIMER_SERVICE_TASK_NAME documentation for more details).",
+                                        "id": "FREERTOS_TIMER_SERVICE_TASK_NAME",
+                                        "name": "FREERTOS_TIMER_SERVICE_TASK_NAME",
+                                        "range": null,
+                                        "title": "configTIMER_SERVICE_TASK_NAME",
+                                        "type": "string"
+                                    },
+                                    {
+                                        "children": [],
+                                        "depends_on": "FREERTOS_USE_TIMERS",
+                                        "help": "Sets the timer task's priority (see configTIMER_TASK_PRIORITY documentation for more details).",
+                                        "id": "FREERTOS_TIMER_TASK_PRIORITY",
+                                        "name": "FREERTOS_TIMER_TASK_PRIORITY",
+                                        "range": [
+                                            1,
+                                            25
+                                        ],
+                                        "title": "configTIMER_TASK_PRIORITY",
+                                        "type": "int"
+                                    },
+                                    {
+                                        "children": [],
+                                        "depends_on": "FREERTOS_USE_TIMERS",
+                                        "help": "Set the timer task's stack size (see configTIMER_TASK_STACK_DEPTH documentation for more details).",
+                                        "id": "FREERTOS_TIMER_TASK_STACK_DEPTH",
+                                        "name": "FREERTOS_TIMER_TASK_STACK_DEPTH",
+                                        "range": [
+                                            1536,
+                                            32768
+                                        ],
+                                        "title": "configTIMER_TASK_STACK_DEPTH",
+                                        "type": "int"
+                                    },
+                                    {
+                                        "children": [],
+                                        "depends_on": "FREERTOS_USE_TIMERS",
+                                        "help": "Set the timer task's command queue length (see configTIMER_QUEUE_LENGTH documentation for more\ndetails).",
+                                        "id": "FREERTOS_TIMER_QUEUE_LENGTH",
+                                        "name": "FREERTOS_TIMER_QUEUE_LENGTH",
+                                        "range": [
+                                            5,
+                                            20
+                                        ],
+                                        "title": "configTIMER_QUEUE_LENGTH",
+                                        "type": "int"
+                                    }
+                                ],
                                 "depends_on": null,
-                                "help": "Sets the timer task's name (see configTIMER_SERVICE_TASK_NAME documentation for more details).",
-                                "id": "FREERTOS_TIMER_SERVICE_TASK_NAME",
-                                "name": "FREERTOS_TIMER_SERVICE_TASK_NAME",
+                                "help": "Enable FreeRTOS Software Timers. Normally the timer task will only get pulled into the build\nand created if any software timer related functions are used. This is achieved through IDF\ndefining a weak empty function for xTimerCreateTimerTask, which should take effect if timers.c\nis not pulled into the build.\n\nIn certain special cases (if you use configUSE_TRACE_FACILITY=y and event groups) the linker will\nstill pull in the xTimerCreateTimerTask from timers.c even if the function that utilized it gets\ndiscarded due to not being used.\n\nIn these cases you can use this option to force the timer task to be disabled.",
+                                "id": "FREERTOS_USE_TIMERS",
+                                "name": "FREERTOS_USE_TIMERS",
                                 "range": null,
-                                "title": "configTIMER_SERVICE_TASK_NAME",
-                                "type": "string"
-                            },
-                            {
-                                "children": [],
-                                "depends_on": null,
-                                "help": "Sets the timer task's priority (see configTIMER_TASK_PRIORITY documentation for more details).",
-                                "id": "FREERTOS_TIMER_TASK_PRIORITY",
-                                "name": "FREERTOS_TIMER_TASK_PRIORITY",
-                                "range": [
-                                    1,
-                                    25
-                                ],
-                                "title": "configTIMER_TASK_PRIORITY",
-                                "type": "int"
-                            },
-                            {
-                                "children": [],
-                                "depends_on": null,
-                                "help": "Set the timer task's stack size (see configTIMER_TASK_STACK_DEPTH documentation for more details).",
-                                "id": "FREERTOS_TIMER_TASK_STACK_DEPTH",
-                                "name": "FREERTOS_TIMER_TASK_STACK_DEPTH",
-                                "range": [
-                                    1536,
-                                    32768
-                                ],
-                                "title": "configTIMER_TASK_STACK_DEPTH",
-                                "type": "int"
-                            },
-                            {
-                                "children": [],
-                                "depends_on": null,
-                                "help": "Set the timer task's command queue length (see configTIMER_QUEUE_LENGTH documentation for more\ndetails).",
-                                "id": "FREERTOS_TIMER_QUEUE_LENGTH",
-                                "name": "FREERTOS_TIMER_QUEUE_LENGTH",
-                                "range": [
-                                    5,
-                                    20
-                                ],
-                                "title": "configTIMER_QUEUE_LENGTH",
-                                "type": "int"
+                                "title": "configUSE_TIMERS",
+                                "type": "bool"
                             },
                             {
                                 "children": [],
@@ -9322,6 +9446,16 @@
                         "range": null,
                         "title": null,
                         "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "IDF_TARGET_ESP32H2",
+                        "help": "Enable this option to apply the countermeasure for ECDSA signature operation\nThis countermeasure masks the real ECDSA sign operation\nunder dummy sign operations to add randomness in the generated power signature.\nThis countermeasure is only necessary for ESP32-H2 < v1.2.",
+                        "id": "HAL_ECDSA_GEN_SIG_CM",
+                        "name": "HAL_ECDSA_GEN_SIG_CM",
+                        "range": null,
+                        "title": "Enable countermeasure for ECDSA signature generation",
+                        "type": "bool"
                     }
                 ],
                 "depends_on": null,
@@ -9837,7 +9971,7 @@
                                     }
                                 ],
                                 "depends_on": "IDF_TARGET_ESP32S3 && !ESPTOOLPY_OCT_FLASH && !APP_BUILD_TYPE_PURE_RAM_APP",
-                                "help": "Whether the High Performance Mode of Flash is enabled. As an optional feature, user needs to manually\nenable this option as a confirmation. To be back-compatible with earlier IDF versionn, this option is\nautomatically enabled with warning when Flash running > 80Mhz.",
+                                "help": "Whether the High Performance Mode of Flash is enabled. As an optional feature, user needs to manually\nenable this option as a confirmation. To be back-compatible with earlier IDF version, this option is\nautomatically enabled with warning when Flash running > 80Mhz.",
                                 "id": "component-config-main-flash-configuration-optional-and-experimental-features-read-docs-first--high-performance-mode-read-docs-first-80mhz-",
                                 "name": "SPI_FLASH_HPM",
                                 "title": "High Performance Mode (READ DOCS FIRST, > 80MHz)",
@@ -9911,6 +10045,16 @@
                                 "name": "SPI_FLASH_AUTO_SUSPEND",
                                 "range": null,
                                 "title": "Auto suspend long erase/write operations (READ DOCS FIRST)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
+                                "help": "XMC-C series is regarded as not qualified for the Suspend feature, since its specification\nhas a tRS >= 1ms restriction. We strongly do not suggest using it for the Suspend feature.\nHowever, if your product in field has enabled this feature, you may still enable this\nconfig option to keep the legacy behavior.\n\nFor new users, DO NOT enable this config.",
+                                "id": "SPI_FLASH_FORCE_ENABLE_XMC_C_SUSPEND",
+                                "name": "SPI_FLASH_FORCE_ENABLE_XMC_C_SUSPEND",
+                                "range": null,
+                                "title": "Enable XMC-C series flash chip suspend feature anyway",
                                 "type": "bool"
                             }
                         ],
@@ -10072,7 +10216,7 @@
                             }
                         ],
                         "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
-                        "help": "This allows to yield the CPUs between erase commands.\nPrevents starvation of other tasks.\nPlease use this configuration together with ``SPI_FLASH_ERASE_YIELD_DURATION_MS`` and\n``SPI_FLASH_ERASE_YIELD_TICKS`` after carefully checking flash datasheet to avoid a\nwatchdog timeout.\nFor more information, please check `SPI Flash API` reference documenation\nunder section `OS Function`.",
+                        "help": "This allows to yield the CPUs between erase commands.\nPrevents starvation of other tasks.\nPlease use this configuration together with ``SPI_FLASH_ERASE_YIELD_DURATION_MS`` and\n``SPI_FLASH_ERASE_YIELD_TICKS`` after carefully checking flash datasheet to avoid a\nwatchdog timeout.\nFor more information, please check `SPI Flash API` reference documentation\nunder section `OS Function`.",
                         "id": "SPI_FLASH_YIELD_DURING_ERASE",
                         "name": "SPI_FLASH_YIELD_DURING_ERASE",
                         "range": null,
@@ -10295,7 +10439,7 @@
     {
         "children": [],
         "depends_on": null,
-        "help": "By enabling this option, ESP-IDF experimental feature options will be visible.\n\nNote you should still enable a certain experimental feature option to use it, and you\nshould read the corresponding risk warning and known issue list carefully.\n\nCurrent experimental feature list:\n\n- CONFIG_ESPTOOLPY_FLASHFREQ_120M && CONFIG_ESPTOOLPY_FLASH_SAMPLE_MODE_DTR\n- CONFIG_SPIRAM_SPEED_120M && CONFIG_SPIRAM_MODE_OCT\n- CONFIG_BOOTLOADER_CACHE_32BIT_ADDR_QUAD_FLASH\n- CONFIG_MBEDTLS_USE_CRYPTO_ROM_IMPL",
+        "help": "By enabling this option, ESP-IDF experimental feature options will be visible.\n\nNote you should still enable a certain experimental feature option to use it, and you\nshould read the corresponding risk warning and known issue list carefully.\n\nCurrent experimental feature list:\n\n- CONFIG_ESPTOOLPY_FLASHFREQ_120M && CONFIG_ESPTOOLPY_FLASH_SAMPLE_MODE_DTR\n- CONFIG_SPIRAM_SPEED_120M && CONFIG_SPIRAM_MODE_OCT\n- CONFIG_BOOTLOADER_CACHE_32BIT_ADDR_QUAD_FLASH\n- CONFIG_USB_HOST_EXT_PORT_SUPPORT_LS\n- CONFIG_USB_HOST_EXT_PORT_RESET_ATTEMPTS",
         "id": "IDF_EXPERIMENTAL_FEATURES",
         "name": "IDF_EXPERIMENTAL_FEATURES",
         "range": null,
