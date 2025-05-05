@@ -57,6 +57,8 @@
 #define BRIGHTNESS_max (1020)
 #define BRIGHTNESS_STEP ((BRIGHTNESS_max - BRIGHTNESS_start) / 9) 
 
+#define LTS5_SOFTWARE_VERSION_STRING "1.0.0"
+
 /* -------------------------------------------------------------------------- */
 /* --- PUBLIC CONSTANTS ----------------------------------------------------- */
 

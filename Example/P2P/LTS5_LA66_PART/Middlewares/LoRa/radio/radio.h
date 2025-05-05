@@ -40,6 +40,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "tremo_uart.h"
+
 /*!
  * Radio driver supported modems
  */

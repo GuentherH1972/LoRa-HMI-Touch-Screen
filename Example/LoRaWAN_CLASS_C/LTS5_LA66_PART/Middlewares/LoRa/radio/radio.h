@@ -398,6 +398,7 @@ extern const struct Radio_s Radio;
 /*! \} addtogroup LORA */
 
 
+void record_rssi(int8_t rssi);
 int8_t get_rssi(void);
 
 #endif // __RADIO_H__

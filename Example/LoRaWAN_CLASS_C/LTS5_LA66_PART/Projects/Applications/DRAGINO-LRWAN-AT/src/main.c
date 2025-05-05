@@ -781,14 +781,14 @@ int main(void)
 				port_temp = 0;
 				port_temp_lock = 0;
 			}
-			else if( (strlen(uart_rx_data_from_esp32) >= 2) && (uart_rx_data_from_esp32[strlen(uart_rx_data_from_esp32) - 2] == 0x05) && \
-					(uart_rx_data_from_esp32[strlen(uart_rx_data_from_esp32) - 1] == 0x01 || uart_rx_data_from_esp32[strlen(uart_rx_data_from_esp32) - 1] == 0x02) ) {
+			else if( (strlen((char *)uart_rx_data_from_esp32) >= 2) && (uart_rx_data_from_esp32[strlen((char *)uart_rx_data_from_esp32) - 2] == 0x05) && \
+					(uart_rx_data_from_esp32[strlen((char *)uart_rx_data_from_esp32) - 1] == 0x01 || uart_rx_data_from_esp32[strlen((char *)uart_rx_data_from_esp32) - 1] == 0x02) ) {
 				for(uint8_t i = 0;i < MAX_NODE_NUM;i++) {
-					if(strncmp((char *)node_arr.arr[i].device_name, (char *)uart_rx_data_from_esp32, strlen(uart_rx_data_from_esp32) - 2) == 0) {
-						if(uart_rx_data_from_esp32[strlen(uart_rx_data_from_esp32) - 1] == 0x01) {
+					if(strncmp((char *)node_arr.arr[i].device_name, (char *)uart_rx_data_from_esp32, strlen((char *)uart_rx_data_from_esp32) - 2) == 0) {
+						if(uart_rx_data_from_esp32[strlen((char *)uart_rx_data_from_esp32) - 1] == 0x01) {
 							AT_data_send(0x01, i + 3, payload_upload_button_checked, 2);
 						}
-						else if(uart_rx_data_from_esp32[strlen(uart_rx_data_from_esp32) - 1] == 0x02) {
+						else if(uart_rx_data_from_esp32[strlen((char *)uart_rx_data_from_esp32) - 1] == 0x02) {
 							AT_data_send(0x01, i + 3, payload_upload_button_unchecked, 2);
 						}
 					}

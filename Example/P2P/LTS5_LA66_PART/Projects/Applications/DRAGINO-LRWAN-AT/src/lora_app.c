@@ -132,6 +132,7 @@ void Printf_message(void)
 
 	LOG_PRINTF(LL_DEBUG, "\n\r");
 	LOG_PRINTF(LL_DEBUG, "LA66 P2P Firmware " AT_VERSION_STRING "\n\r");
+	LOG_PRINTF(LL_DEBUG, "P2P Firmware " LA66_OF_LTS5_VERSION_STRING " for LA66 in LTS5 \n\r");
 	delay_ms(20);
 	LOG_PRINTF(LL_DEBUG, "Group: %d , %d\n\r", tx_groupmod_value, rx_groupmod_value);
 	delay_ms(20);

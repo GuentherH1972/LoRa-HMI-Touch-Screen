@@ -430,7 +430,7 @@ void ui_ScreenSetting_screen_init(void)
     lv_obj_set_x(ui_LabelModelValue, 260);
     lv_obj_set_y(ui_LabelModelValue, 0);
     lv_obj_set_align(ui_LabelModelValue, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_LabelModelValue, "LTS5");//TLS-5 -
+    lv_label_set_text(ui_LabelModelValue, "LTS5");
     lv_obj_set_style_text_color(ui_LabelModelValue, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelModelValue, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelModelValue, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -465,7 +465,7 @@ void ui_ScreenSetting_screen_init(void)
     lv_obj_set_x(ui_LabelVersionValue, 262);
     lv_obj_set_y(ui_LabelVersionValue, 0);
     lv_obj_set_align(ui_LabelVersionValue, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_LabelVersionValue, "1.0.0");//0.0.0
+    lv_label_set_text(ui_LabelVersionValue, LTS5_SOFTWARE_VERSION_STRING);
     lv_obj_set_style_text_color(ui_LabelVersionValue, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelVersionValue, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelVersionValue, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);

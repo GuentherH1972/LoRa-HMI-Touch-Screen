@@ -426,6 +426,7 @@ void LORA_Init(LoRaMainCallback_t *callbacks, LoRaParam_t *LoRaParam)
 	LOG_PRINTF(LL_DEBUG, "\n\rLA66 Hardware test\n\r");
 	LOG_PRINTF(LL_DEBUG, "Image Version: " AT_VERSION_STRING "\n\r");
 	LOG_PRINTF(LL_DEBUG, "LoRaWan Stack: " AT_LoRaWan_VERSION_STRING "\n\r");
+	LOG_PRINTF(LL_DEBUG, "LoRaWAN Firmware " LA66_OF_LTS5_VERSION_STRING " for LA66 in LTS5 \n\r");
 	LOG_PRINTF(LL_DEBUG, "Frequency Band: ");
 #elif defined(USB_LORAWAN_ADAPTER_LBT)
 	LOG_PRINTF(LL_DEBUG, "\n\rDragino USB LoRaWAN adapter LBT\n\r");
@@ -434,6 +435,7 @@ void LORA_Init(LoRaMainCallback_t *callbacks, LoRaParam_t *LoRaParam)
 	LOG_PRINTF(LL_DEBUG, "\n\rDragino LA66 Device\n\r");
 	LOG_PRINTF(LL_DEBUG, "Image Version: " AT_VERSION_STRING "\n\r");
 	LOG_PRINTF(LL_DEBUG, "LoRaWan Stack: " AT_LoRaWan_VERSION_STRING "\n\r");
+	LOG_PRINTF(LL_DEBUG, "LoRaWAN Firmware " LA66_OF_LTS5_VERSION_STRING " for LA66 in LTS5 \n\r");
 	LOG_PRINTF(LL_DEBUG, "Frequency Band: ");
 #endif
 
