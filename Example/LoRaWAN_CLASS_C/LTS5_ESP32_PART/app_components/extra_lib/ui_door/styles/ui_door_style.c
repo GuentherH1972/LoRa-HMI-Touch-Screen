@@ -47,6 +47,7 @@ panel_with_type create_door(uint8_t index, lv_obj_t *parent)
     ui_ChartDisplayDoor = lv_chart_create(ui_PanelChartDoor);
     lv_obj_set_width(ui_ChartDisplayDoor, 156);
     lv_obj_set_height(ui_ChartDisplayDoor, 50);
+    lv_obj_clear_flag(ui_ChartDisplayDoor, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_align(ui_ChartDisplayDoor, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_ChartDisplayDoor, LV_OBJ_FLAG_EVENT_BUBBLE);     /// Flags
     lv_chart_set_type(ui_ChartDisplayDoor, LV_CHART_TYPE_NONE);
@@ -71,9 +72,9 @@ panel_with_type create_door(uint8_t index, lv_obj_t *parent)
 
     lv_obj_set_style_line_color(ui_ChartDisplayDoor, lv_color_hex(0x2121E2), LV_PART_ITEMS | LV_STATE_DEFAULT);
     lv_obj_set_style_line_opa(ui_ChartDisplayDoor, 255, LV_PART_ITEMS | LV_STATE_DEFAULT);
-    lv_obj_set_style_line_width(ui_ChartDisplayDoor, 2, LV_PART_ITEMS | LV_STATE_DEFAULT);
+    lv_obj_set_style_line_width(ui_ChartDisplayDoor, 1, LV_PART_ITEMS | LV_STATE_DEFAULT);
 
-    lv_obj_set_style_line_width(ui_ChartDisplayDoor, 2, LV_PART_TICKS | LV_STATE_DEFAULT);
+    lv_obj_set_style_line_width(ui_ChartDisplayDoor, 1, LV_PART_TICKS | LV_STATE_DEFAULT);
 
     ui_LabelTypeDoor = lv_label_create(ui_ChartDisplayDoor);
     lv_obj_set_width(ui_LabelTypeDoor, LV_SIZE_CONTENT);   /// 1
@@ -83,6 +84,18 @@ panel_with_type create_door(uint8_t index, lv_obj_t *parent)
     lv_obj_set_style_text_color(ui_LabelTypeDoor, lv_color_hex(0x94AEB4), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelTypeDoor, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelTypeDoor, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_LabelFportDoor = lv_label_create(ui_ChartDisplayDoor);
+    lv_obj_set_width(ui_LabelFportDoor, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_LabelFportDoor, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_LabelFportDoor, 10);//  5  0  1
+    lv_obj_set_y(ui_LabelFportDoor, -10);// -5 -7  -12
+    lv_obj_set_align(ui_LabelFportDoor, LV_ALIGN_TOP_RIGHT);
+    lv_label_set_text(ui_LabelFportDoor, "Fport\n100");//   100   Fport: 100
+    lv_obj_set_style_text_align(ui_LabelFportDoor, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_LabelFportDoor, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);//0x94AEB4  0x84BE84  0x9370DB  0xE6A8D7 0xFF6B6B
+    lv_obj_set_style_text_opa(ui_LabelFportDoor, 255, LV_PART_MAIN | LV_STATE_DEFAULT);  //192
+    lv_obj_set_style_text_font(ui_LabelFportDoor, &lv_font_montserrat_10, LV_PART_MAIN | LV_STATE_DEFAULT);// &lv_font_montserrat_8
 
     ui_LabelDevEUIDoor = lv_label_create(ui_PanelSensorNodeDoor);
     lv_obj_set_width(ui_LabelDevEUIDoor, 80);   /// 1 LV_SIZE_CONTENT
@@ -533,6 +546,7 @@ panel_with_type create_door(uint8_t index, lv_obj_t *parent)
     union_sensor.panel_union.door.ui_PanelChartDoor = ui_PanelChartDoor;
     union_sensor.panel_union.door.ui_ChartDisplayDoor = ui_ChartDisplayDoor;
     union_sensor.panel_union.door.ui_LabelTypeDoor = ui_LabelTypeDoor;
+    union_sensor.panel_union.door.ui_LabelFportDoor = ui_LabelFportDoor;
     union_sensor.panel_union.door.ui_LabelDevEUIDoor = ui_LabelDevEUIDoor;
     union_sensor.panel_union.door.ui_LabelNameDoor = ui_LabelNameDoor;
     union_sensor.panel_union.door.ui_PanelSignalStrengthDoor = ui_PanelSignalStrengthDoor;
@@ -563,7 +577,7 @@ panel_with_type create_door(uint8_t index, lv_obj_t *parent)
     union_sensor.panel_union.door.ui_PanelSensorNodeDeleteDoor = ui_PanelSensorNodeDeleteDoor;
     union_sensor.panel_union.door.ui_ImageDeleteDoor = ui_ImageDeleteDoor;
 
-    union_sensor.panel_type = 2;
+    union_sensor.panel_type = DOOR_TYPE;
 
     lv_obj_set_x(union_sensor.panel_union.door.ui_PanelSensorDoor, x_by_index(index));
     lv_obj_set_y(union_sensor.panel_union.door.ui_PanelSensorDoor, y_by_index(index));

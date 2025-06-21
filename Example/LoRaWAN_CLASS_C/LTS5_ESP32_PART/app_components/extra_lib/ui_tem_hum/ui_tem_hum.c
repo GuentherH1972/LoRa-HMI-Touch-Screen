@@ -15,6 +15,7 @@ lv_obj_t * ui_PanelSensorNodeTemHum;
 lv_obj_t * ui_PanelChartTemHum;
 lv_obj_t * ui_ChartDisplayTemHum;
 lv_obj_t * ui_LabelTypeTemHum;
+lv_obj_t * ui_LabelFportTemHum;
 lv_obj_t * ui_LabelDevEUITemHum;
 lv_obj_t * ui_LabelNameTemHum;
 lv_obj_t * ui_PanelSignalStrengthTemHum;

@@ -46,6 +46,7 @@ panel_with_type create_button(uint8_t index, lv_obj_t *parent)
     ui_ChartDisplayButton = lv_chart_create(ui_PanelChartButton);
     lv_obj_set_width(ui_ChartDisplayButton, 156);
     lv_obj_set_height(ui_ChartDisplayButton, 50);
+    lv_obj_clear_flag(ui_ChartDisplayButton, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_align(ui_ChartDisplayButton, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_ChartDisplayButton, LV_OBJ_FLAG_EVENT_BUBBLE);     /// Flags
     lv_chart_set_type(ui_ChartDisplayButton, LV_CHART_TYPE_NONE);
@@ -70,9 +71,9 @@ panel_with_type create_button(uint8_t index, lv_obj_t *parent)
 
     lv_obj_set_style_line_color(ui_ChartDisplayButton, lv_color_hex(0x2121E2), LV_PART_ITEMS | LV_STATE_DEFAULT);
     lv_obj_set_style_line_opa(ui_ChartDisplayButton, 255, LV_PART_ITEMS | LV_STATE_DEFAULT);
-    lv_obj_set_style_line_width(ui_ChartDisplayButton, 2, LV_PART_ITEMS | LV_STATE_DEFAULT);
+    lv_obj_set_style_line_width(ui_ChartDisplayButton, 1, LV_PART_ITEMS | LV_STATE_DEFAULT);
 
-    lv_obj_set_style_line_width(ui_ChartDisplayButton, 2, LV_PART_TICKS | LV_STATE_DEFAULT);
+    lv_obj_set_style_line_width(ui_ChartDisplayButton, 1, LV_PART_TICKS | LV_STATE_DEFAULT);
 
     ui_LabelTypeButton = lv_label_create(ui_ChartDisplayButton);
     lv_obj_set_width(ui_LabelTypeButton, LV_SIZE_CONTENT);   /// 1
@@ -82,6 +83,18 @@ panel_with_type create_button(uint8_t index, lv_obj_t *parent)
     lv_obj_set_style_text_color(ui_LabelTypeButton, lv_color_hex(0x94AEB4), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelTypeButton, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelTypeButton, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_LabelFportButton = lv_label_create(ui_ChartDisplayButton);
+    lv_obj_set_width(ui_LabelFportButton, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_LabelFportButton, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_LabelFportButton, 10);//  5  0  1
+    lv_obj_set_y(ui_LabelFportButton, -10);// -5 -7  -12
+    lv_obj_set_align(ui_LabelFportButton, LV_ALIGN_TOP_RIGHT);
+    lv_label_set_text(ui_LabelFportButton, "Fport\n100");//   100   Fport: 100
+    lv_obj_set_style_text_align(ui_LabelFportButton, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_LabelFportButton, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);//0x94AEB4  0x84BE84  0x9370DB  0xE6A8D7 0xFF6B6B
+    lv_obj_set_style_text_opa(ui_LabelFportButton, 255, LV_PART_MAIN | LV_STATE_DEFAULT);  //192
+    lv_obj_set_style_text_font(ui_LabelFportButton, &lv_font_montserrat_10, LV_PART_MAIN | LV_STATE_DEFAULT);//   &lv_font_montserrat_8
 
     ui_LabelDevEUIButton = lv_label_create(ui_PanelSensorNodeButton);
     lv_obj_set_width(ui_LabelDevEUIButton, 80);   /// 1  LV_SIZE_CONTENT
@@ -426,6 +439,7 @@ panel_with_type create_button(uint8_t index, lv_obj_t *parent)
     union_sensor.panel_union.button.ui_PanelChartButton = ui_PanelChartButton;
     union_sensor.panel_union.button.ui_ChartDisplayButton = ui_ChartDisplayButton;
     union_sensor.panel_union.button.ui_LabelTypeButton = ui_LabelTypeButton;
+    union_sensor.panel_union.button.ui_LabelFportButton = ui_LabelFportButton;
     union_sensor.panel_union.button.ui_LabelDevEUIButton = ui_LabelDevEUIButton;
     union_sensor.panel_union.button.ui_LabelNameButton = ui_LabelNameButton;
     union_sensor.panel_union.button.ui_PanelSignalStrengthButton = ui_PanelSignalStrengthButton;

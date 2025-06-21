@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0] - 2025-06-21
+
+### Added
+
+- Added a new page to check the configuration about LA66 module side and activate LoRaWAN communication.
+- Added Fport information to the panel.
+- Added prompt text when the number of panels is 0.
+
+### Fixed
+
+- Fixed the issue of incorrect binding of switch objects in the button panel.
+- Fixed the issue of object refresh error in the Alarm panel.
+
 ## [1.0.0] - 2025-04-28
 
 ### Added

@@ -19,6 +19,7 @@ lv_obj_t * ui_PanelSensorNodeWaterLeak;
 lv_obj_t * ui_PanelChartWaterLeak;
 lv_obj_t * ui_ChartDisplayWaterLeak;
 lv_obj_t * ui_LabelTypeWaterLeak;
+lv_obj_t * ui_LabelFportWaterLeak;
 lv_obj_t * ui_LabelDevEUIWaterLeak;
 lv_obj_t * ui_LabelNameWaterLeak;
 lv_obj_t * ui_PanelCurrentStatusLeakingWaterLeak;

@@ -18,6 +18,7 @@ lv_obj_t * ui_PanelSensorNodeButton;
 lv_obj_t * ui_PanelChartButton;
 lv_obj_t * ui_ChartDisplayButton;
 lv_obj_t * ui_LabelTypeButton;
+lv_obj_t * ui_LabelFportButton;
 lv_obj_t * ui_LabelDevEUIButton;
 lv_obj_t * ui_LabelNameButton;
 lv_obj_t * ui_PanelSignalStrengthButton;
@@ -87,13 +88,9 @@ void ui_event_SwitchButtonButton(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_VALUE_CHANGED &&  lv_obj_has_state(target, LV_STATE_CHECKED)) {
-        _ui_flag_modify(ui_LabelButtonONButton, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
-        _ui_flag_modify(ui_LabelButtonOFFButton, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
         ButtonChecked(e);
     }
     if(event_code == LV_EVENT_VALUE_CHANGED &&  !lv_obj_has_state(target, LV_STATE_CHECKED)) {
-        _ui_flag_modify(ui_LabelButtonONButton, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
-        _ui_flag_modify(ui_LabelButtonOFFButton, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
         ButtonUnchecked(e);
     }
 }

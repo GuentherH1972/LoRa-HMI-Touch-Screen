@@ -23,6 +23,7 @@ extern lv_obj_t * ui_PanelSensorNodeAlarm;
 extern lv_obj_t * ui_PanelChartAlarm;
 extern lv_obj_t * ui_ChartDisplayAlarm;
 extern lv_obj_t * ui_LabelTypeAlarm;
+extern lv_obj_t * ui_LabelFportAlarm;
 extern lv_obj_t * ui_LabelDevEUIAlarm;
 extern lv_obj_t * ui_LabelNameAlarm;
 extern lv_obj_t * ui_PanelSignalStrengthAlarm;

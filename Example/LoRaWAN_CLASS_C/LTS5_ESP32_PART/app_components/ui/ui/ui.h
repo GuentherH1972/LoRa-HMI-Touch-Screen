@@ -20,10 +20,15 @@ extern "C" {
 extern lv_obj_t * ui_ButtonSaveConfig;
 extern lv_obj_t * ui_LabelSaveConfig;
 
+// extern lv_obj_t * ui_ButtonSendActivate_TTN_connect;
+// extern lv_obj_t * ui_LabelSendActivate_TTN_connect;
+
 void ui_event_ConfigSave(lv_event_t * e);
 
+// void ui_event_SendActivate_TTN_connect(lv_event_t * e);
+
 void Boot_Animation(lv_obj_t * TargetObject, int delay);
-void StarMove3_Animation(lv_obj_t * TargetObject, int delay);
+// void StarMove3_Animation(lv_obj_t * TargetObject, int delay);
 void ProductMove1_Animation(lv_obj_t * TargetObject, int delay);
 void ProductMove2_Animation(lv_obj_t * TargetObject, int delay);
 void ProductMove3_Animation(lv_obj_t * TargetObject, int delay);
@@ -31,12 +36,14 @@ void ProductMove4_Animation(lv_obj_t * TargetObject, int delay);
 void ProductMove5_Animation(lv_obj_t * TargetObject, int delay);
 void ProductMove6_Animation(lv_obj_t * TargetObject, int delay);
 void LogoMove1_Animation(lv_obj_t * TargetObject, int delay);
-void StarMove2_Animation(lv_obj_t * TargetObject, int delay);
-void StarMove1_Animation(lv_obj_t * TargetObject, int delay);
+// void StarMove2_Animation(lv_obj_t * TargetObject, int delay);
+// void StarMove1_Animation(lv_obj_t * TargetObject, int delay);
 void LogoMove2_Animation(lv_obj_t * TargetObject, int delay);
-void LabelMove1_Animation(lv_obj_t * TargetObject, int delay);
-void LabelMove2_Animation(lv_obj_t * TargetObject, int delay);
+// void LabelMove1_Animation(lv_obj_t * TargetObject, int delay);
+// void LabelMove2_Animation(lv_obj_t * TargetObject, int delay);
 void NewPanelArrive_Animation(lv_obj_t * TargetObject, int delay);
+void LoRaParams_Page_Notice_Message_Animation(lv_obj_t * TargetObject, int delay, int leave_time_ms);
+
 // SCREEN: ui_ScreenBoot
 void ui_ScreenBoot_screen_init(void);
 void ui_event_ScreenBoot(lv_event_t * e);
@@ -68,6 +75,7 @@ extern lv_obj_t * ui_LabelPresentEverything2;
 extern lv_obj_t * ui_SliderStarMove1;
 extern lv_obj_t * ui_SliderStarMove2;
 extern lv_obj_t * ui_SliderStarMove3;
+
 // SCREEN: ui_ScreenMain
 void ui_ScreenMain_screen_init(void);
 extern lv_obj_t * ui_ScreenMain;
@@ -76,9 +84,13 @@ extern lv_obj_t * ui_ContainerHomePageMain;
 extern lv_obj_t * ui_ImageHomePageMain;
 extern lv_obj_t * ui_LabelHomePageMain;
 void ui_event_ContainerSettingMain(lv_event_t * e);
-extern lv_obj_t * ui_ContainerSettingMain;
-extern lv_obj_t * ui_ImageSettingMain;
-extern lv_obj_t * ui_LabelSettingMain;
+extern lv_obj_t * ui_ContainerSettingPageMain;
+extern lv_obj_t * ui_ImageSettingPageMain;
+extern lv_obj_t * ui_LabelSettingPageMain;
+void ui_event_ContainerLoRaParamsMain(lv_event_t * e);
+extern lv_obj_t * ui_ContainerLoRaPageMain;
+extern lv_obj_t * ui_ImageLoRaPageMain;
+extern lv_obj_t * ui_LabelLoRaPageMain;
 extern lv_obj_t * ui_ImageLogoMain;
 extern lv_obj_t * ui_PanelSeparateTableScreenMain;
 extern lv_obj_t * ui_PanelBanner;
@@ -88,6 +100,8 @@ extern lv_obj_t * ui_ContainerNewMessageNotice;
 extern lv_obj_t * ui_LabelNewMessageNotice;
 extern lv_obj_t * ui_ContainerRefreshMessageNotice;
 extern lv_obj_t * ui_LabelRefreshMessageNotice;
+extern lv_obj_t * ui_ContainerMessageNoticeMain;
+extern lv_obj_t * ui_LabelMessageNoticeMain;
 extern lv_obj_t * ui_PanelPanel;
 extern lv_obj_t * ui_PanelPanelFilter;
 extern lv_obj_t * ui_LabelPanelNumber;
@@ -99,21 +113,31 @@ void ui_event_DropdownSelectBatteryLevel(lv_event_t * e);
 extern lv_obj_t * ui_DropdownSelectBatteryLevel;
 extern lv_obj_t * ui_ImageBatteryLevelSort;
 extern lv_obj_t * ui_PanelContainer;
+extern lv_obj_t * ui_LabelNoPanelDataReceived;
+
 // SCREEN: ui_ScreenSetting
 void ui_ScreenSetting_screen_init(void);
 extern lv_obj_t * ui_ScreenSetting;
-extern lv_obj_t * ui_ContainerleftSetting;
-void ui_event_ContainerHomepageSetting(lv_event_t * e);
-extern lv_obj_t * ui_ContainerHomepageSetting;
-extern lv_obj_t * ui_ImageHomepageSetting;
-extern lv_obj_t * ui_LabelHomepageSetting;
-extern lv_obj_t * ui_ContainerSettingSetting;
-extern lv_obj_t * ui_ImageSettingSetting;
-extern lv_obj_t * ui_LabelSettingSetting;
+extern lv_obj_t * ui_ContainerLeftSetting;
+void ui_event_ContainerMainSetting(lv_event_t * e);
+extern lv_obj_t * ui_ContainerHomePageSetting;
+extern lv_obj_t * ui_ImageHomePageSetting;
+extern lv_obj_t * ui_LabelHomePageSetting;
+extern lv_obj_t * ui_ContainerSettingPageSetting;
+extern lv_obj_t * ui_ImageSettingPageSetting;
+extern lv_obj_t * ui_LabelSettingPageSetting;
+void ui_event_ContainerLoRaParamsSetting(lv_event_t * e);
+extern lv_obj_t * ui_ContainerLoRaPageSetting;
+extern lv_obj_t * ui_ImageLoRaPageSetting;
+extern lv_obj_t * ui_LabelLoRaPageSetting;
 extern lv_obj_t * ui_ImageLogoSetting;
 extern lv_obj_t * ui_PanelSeparateTableScreenSetting;
 extern lv_obj_t * ui_PanelSystem;
 extern lv_obj_t * ui_LabelSystemSetting;
+extern lv_obj_t * ui_PanelBrightnessAdjustment;
+extern lv_obj_t * ui_LabelBrightnessAdjustment;
+void ui_event_SliderBrightnessAdjustment(lv_event_t * e);
+extern lv_obj_t * ui_SliderBrightnessAdjustment;
 extern lv_obj_t * ui_PanelTemUnit;
 extern lv_obj_t * ui_LabelTemUnit;
 void ui_event_DropdownTemUnit(lv_event_t * e);
@@ -124,10 +148,10 @@ extern lv_obj_t * ui_LabelBootAnimation;
 void ui_event_DropdownBootAnimationSwitch(lv_event_t * e);
 // extern lv_obj_t * ui_CheckboxBootAnimation;
 extern lv_obj_t * ui_DropdownBootAnimationSwitch;
-extern lv_obj_t * ui_PanelBrightnessAdjustment;
-extern lv_obj_t * ui_LabelBrightnessAdjustment;
-void ui_event_SliderBrightnessAdjustment(lv_event_t * e);
-extern lv_obj_t * ui_SliderBrightnessAdjustment;
+extern lv_obj_t * ui_PanelFportDisplaySwitch;
+extern lv_obj_t * ui_LabelFportDisplay;
+void ui_event_DropdownFportDisplaySwitch(lv_event_t * e);
+extern lv_obj_t * ui_DropdownFportDisplaySwitch;
 extern lv_obj_t * ui_LabelSystemInformation;
 extern lv_obj_t * ui_PanelModel;
 extern lv_obj_t * ui_LabelModel;
@@ -138,6 +162,57 @@ extern lv_obj_t * ui_LabelVersionValue;
 extern lv_obj_t * ui_PanelBootTime;
 extern lv_obj_t * ui_LabelBootTime;
 extern lv_obj_t * ui_LabelBootTimeValue;
+
+// SCREEN: ui_ScreenLoRaParams
+void ui_ScreenLoRaParams_screen_init(void);
+extern lv_obj_t * ui_ScreenLoRaParams;
+extern lv_obj_t * ui_ContainerLeftLoRaParams;
+void ui_event_ContainerHomePageLoRaParams(lv_event_t * e);
+extern lv_obj_t * ui_ContainerHomePageLoRaParams;
+extern lv_obj_t * ui_ImageHomePageLoRaParams;
+extern lv_obj_t * ui_LabelHomePageLoRaParams;
+void ui_event_ContainerSettingPageLoRaParams(lv_event_t * e);
+extern lv_obj_t * ui_ContainerSettingPageLoRaParams;
+extern lv_obj_t * ui_ImageSettingPageLoRaParams;
+extern lv_obj_t * ui_LabelSettingPageLoRaParams;
+extern lv_obj_t * ui_ContainerLoRaPageLoRaParams;
+extern lv_obj_t * ui_ImageLoRaPageLoRaParams;
+extern lv_obj_t * ui_LabelLoRaPageLoRaParams;
+extern lv_obj_t * ui_ImageLogoLoRaParams;
+extern lv_obj_t * ui_PanelSeparateTableScreenLoRaParams;
+extern lv_obj_t * ui_ContainerMessageNoticeLoRaParams;
+extern lv_obj_t * ui_LabelMessageNoticeLoRaParams;
+extern lv_obj_t * ui_PanelPanelLoRaParams;
+extern lv_obj_t * ui_PanelLA66FwLoRaParams;
+extern lv_obj_t * ui_DropdownCurrentFwLoRaParams;
+extern lv_obj_t * ui_LabelFwVersionLoRaParams;
+void ui_event_ButtonFwDetectLoRaParams(lv_event_t * e);
+extern lv_obj_t * ui_ButtonFwDetectLoRaParams;
+extern lv_obj_t * ui_LabelFwDetectLoRaParams;
+// void ui_event_ButtonGetLA66ConfigLoRaParams(lv_event_t * e);
+// extern lv_obj_t * ui_ButtonGetLA66ConfigLoRaParams;
+// extern lv_obj_t * ui_LabelGetLA66ConfigLoRaParams;
+extern lv_obj_t * ui_PanelFontSizeLoRaParams;
+extern lv_obj_t * ui_LabelFontSizeLoRaParams;
+void ui_event_DropdownFontSizeLoRaParams(lv_event_t * e);
+extern lv_obj_t * ui_DropdownFontSizeLoRaParams;
+extern lv_obj_t * ui_PanelLoRaWANNetworkStatusLoRaParams;
+extern lv_obj_t * ui_DropdownLoRaWANNetworkStatusLoRaParams;
+void ui_event_ButtonLoRaWANNetworkActivateLoRaParams(lv_event_t * e);
+extern lv_obj_t * ui_ButtonLoRaWANNetworkActivateLoRaParams;
+extern lv_obj_t * ui_LabelLoRaWANNetworkActivateLoRaParams;
+extern lv_obj_t * ui_PanelLoRaWANNetworkStatusHideLoRaParams;
+void ui_event_ButtonFontSizeIncreaseLoRaParams(lv_event_t * e);
+extern lv_obj_t * ui_ButtonFontSizeIncreaseLoRaParams;
+extern lv_obj_t * ui_LabelFontSizeIncreaseLoRaParams;
+void ui_event_ButtonFontSizeDecreaseLoRaParams(lv_event_t * e);
+extern lv_obj_t * ui_ButtonFontSizeDecreaseLoRaParams;
+extern lv_obj_t * ui_LabelFontSizeDecreaseLoRaParams;
+extern lv_obj_t * ui_PanelDialogLoRaParams;
+extern lv_obj_t * ui_TextAreaDialogLoRaParams;
+// CUSTOM VARIABLES
+
+
 extern lv_obj_t * ui____initial_actions0;
 
 
@@ -191,6 +266,7 @@ LV_IMG_DECLARE(ui_img_product_3_png);    // assets/Product_3.png
 LV_IMG_DECLARE(ui_img_product_4_png);    // assets/Product_4.png
 LV_IMG_DECLARE(ui_img_product_5_png);    // assets/Product_5.png
 LV_IMG_DECLARE(ui_img_product_6_png);    // assets/Product_6.png
+LV_IMG_DECLARE(ui_img_lora_module_png);    // assets/LoRa_Module.png
 
 
 

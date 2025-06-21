@@ -1,6 +1,7 @@
 SET(SOURCES screens/ui_ScreenBoot.c
     screens/ui_ScreenMain.c
     screens/ui_ScreenSetting.c
+    screens/ui_ScreenLoRaParams.c
     ui.c
     components/ui_comp_hook.c
     ui_helpers.c
@@ -18,6 +19,7 @@ SET(SOURCES screens/ui_ScreenBoot.c
     images/ui_img_profile_png.c
     images/ui_img_last_seen_png.c
     images/ui_img_battery_png.c
+    images/ui_img_lora_module_png.c
     fonts/ui_font_Font12.c
     fonts/ui_font_Font16.c)
 

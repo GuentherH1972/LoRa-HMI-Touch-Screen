@@ -23,6 +23,7 @@ extern lv_obj_t * ui_PanelSensorNodeOccupied;
 extern lv_obj_t * ui_PanelChartOccupied;
 extern lv_obj_t * ui_ChartDisplayOccupied;
 extern lv_obj_t * ui_LabelTypeOccupied;
+extern lv_obj_t * ui_LabelFportOccupied;
 extern lv_obj_t * ui_LabelDevEUIOccupied;
 extern lv_obj_t * ui_LabelNameOccupied;
 extern lv_obj_t * ui_PanelSignalStrengthOccupied;

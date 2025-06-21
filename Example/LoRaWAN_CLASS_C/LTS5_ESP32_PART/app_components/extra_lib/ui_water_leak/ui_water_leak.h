@@ -23,6 +23,7 @@ extern lv_obj_t * ui_PanelSensorNodeWaterLeak;
 extern lv_obj_t * ui_PanelChartWaterLeak;
 extern lv_obj_t * ui_ChartDisplayWaterLeak;
 extern lv_obj_t * ui_LabelTypeWaterLeak;
+extern lv_obj_t * ui_LabelFportWaterLeak;
 extern lv_obj_t * ui_LabelDevEUIWaterLeak;
 extern lv_obj_t * ui_LabelNameWaterLeak;
 extern lv_obj_t * ui_PanelCurrentStatusLeakingWaterLeak;

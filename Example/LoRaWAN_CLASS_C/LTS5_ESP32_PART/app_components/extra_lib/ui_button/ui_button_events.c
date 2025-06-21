@@ -29,6 +29,9 @@ void ButtonChecked(lv_event_t * e)
 	panel_all * panel = find_upper_by_SensorPanel(arr_get(),((lv_obj_t *)(e->user_data)));
 	panel->panel_obj.panel_union.button.button_press_flag = true;
 	panel->panel_obj.panel_union.button.button_status = true;
+
+	_ui_flag_modify(panel->panel_obj.panel_union.button.ui_LabelButtonONButton, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
+	_ui_flag_modify(panel->panel_obj.panel_union.button.ui_LabelButtonOFFButton, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
 }
 
 void ButtonUnchecked(lv_event_t * e)
@@ -37,4 +40,7 @@ void ButtonUnchecked(lv_event_t * e)
 	panel_all * panel = find_upper_by_SensorPanel(arr_get(),((lv_obj_t *)(e->user_data)));
 	panel->panel_obj.panel_union.button.button_press_flag = true;
 	panel->panel_obj.panel_union.button.button_status = false;
+
+	_ui_flag_modify(panel->panel_obj.panel_union.button.ui_LabelButtonONButton, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
+	_ui_flag_modify(panel->panel_obj.panel_union.button.ui_LabelButtonOFFButton, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
 }

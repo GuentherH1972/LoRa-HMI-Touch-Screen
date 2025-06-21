@@ -10,12 +10,22 @@
 extern "C" {
 #endif
 
+// extern const lv_font_t *font_size_address_table[];
+
 void TimeSort(lv_event_t * e);
 void BatteryLevelSort(lv_event_t * e);
 void TemUnitSwitch(lv_event_t * e);
 void BootScreenSwitch(lv_event_t * e);
+void FportDisplaySwitch(lv_event_t * e);
 void BrightnessAdjust(lv_event_t * e);
 void AllConfigSave(lv_event_t * e);
+// void SendJoin(lv_event_t * e);
+void LA66FirmwareRecognize(lv_event_t * e);
+// void LA66ConfigurationInformationUpdate(lv_event_t * e);
+void ChangeFontSizeLoRaParams(lv_event_t * e);
+void ActivateLoRaWANNetwork(lv_event_t * e);
+void FontSizeIncreaseLoRaParams(lv_event_t * e);
+void FontSizeDecreaseLoRaParams(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

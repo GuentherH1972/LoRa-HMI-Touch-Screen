@@ -46,6 +46,7 @@ panel_with_type create_tem_hum(uint8_t index, lv_obj_t *parent)
     ui_ChartDisplayTemHum = lv_chart_create(ui_PanelChartTemHum);
     lv_obj_set_width(ui_ChartDisplayTemHum, 156);
     lv_obj_set_height(ui_ChartDisplayTemHum, 50);
+    lv_obj_clear_flag(ui_ChartDisplayTemHum, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_align(ui_ChartDisplayTemHum, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_ChartDisplayTemHum, LV_OBJ_FLAG_EVENT_BUBBLE);     /// Flags
     lv_chart_set_type(ui_ChartDisplayTemHum, LV_CHART_TYPE_NONE);
@@ -70,9 +71,9 @@ panel_with_type create_tem_hum(uint8_t index, lv_obj_t *parent)
 
     lv_obj_set_style_line_color(ui_ChartDisplayTemHum, lv_color_hex(0x2121E2), LV_PART_ITEMS | LV_STATE_DEFAULT);
     lv_obj_set_style_line_opa(ui_ChartDisplayTemHum, 255, LV_PART_ITEMS | LV_STATE_DEFAULT);
-    lv_obj_set_style_line_width(ui_ChartDisplayTemHum, 2, LV_PART_ITEMS | LV_STATE_DEFAULT);
+    lv_obj_set_style_line_width(ui_ChartDisplayTemHum, 1, LV_PART_ITEMS | LV_STATE_DEFAULT);
 
-    lv_obj_set_style_line_width(ui_ChartDisplayTemHum, 2, LV_PART_TICKS | LV_STATE_DEFAULT);
+    lv_obj_set_style_line_width(ui_ChartDisplayTemHum, 1, LV_PART_TICKS | LV_STATE_DEFAULT);
 
     ui_LabelTypeTemHum = lv_label_create(ui_ChartDisplayTemHum);
     lv_obj_set_width(ui_LabelTypeTemHum, LV_SIZE_CONTENT);   /// 1
@@ -82,6 +83,18 @@ panel_with_type create_tem_hum(uint8_t index, lv_obj_t *parent)
     lv_obj_set_style_text_color(ui_LabelTypeTemHum, lv_color_hex(0x94AEB4), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelTypeTemHum, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelTypeTemHum, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_LabelFportTemHum = lv_label_create(ui_ChartDisplayTemHum);
+    lv_obj_set_width(ui_LabelFportTemHum, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_LabelFportTemHum, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_LabelFportTemHum, 10);//  5  0  1
+    lv_obj_set_y(ui_LabelFportTemHum, -10);// -5 -7  -12
+    lv_obj_set_align(ui_LabelFportTemHum, LV_ALIGN_TOP_RIGHT);
+    lv_label_set_text(ui_LabelFportTemHum, "Fport\n100");//   100   Fport: 100
+    lv_obj_set_style_text_align(ui_LabelFportTemHum, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_LabelFportTemHum, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);//0x94AEB4  0x84BE84  0x9370DB  0xE6A8D7 0xFF6B6B
+    lv_obj_set_style_text_opa(ui_LabelFportTemHum, 255, LV_PART_MAIN | LV_STATE_DEFAULT);  //192
+    lv_obj_set_style_text_font(ui_LabelFportTemHum, &lv_font_montserrat_10, LV_PART_MAIN | LV_STATE_DEFAULT);// &lv_font_montserrat_8
 
     ui_LabelDevEUITemHum = lv_label_create(ui_PanelSensorNodeTemHum);
     lv_obj_set_width(ui_LabelDevEUITemHum, 80);   /// 1 
@@ -486,6 +499,7 @@ panel_with_type create_tem_hum(uint8_t index, lv_obj_t *parent)
     union_sensor.panel_union.tem_hum.ui_PanelChartTemHum = ui_PanelChartTemHum;
     union_sensor.panel_union.tem_hum.ui_ChartDisplayTemHum = ui_ChartDisplayTemHum;
     union_sensor.panel_union.tem_hum.ui_LabelTypeTemHum = ui_LabelTypeTemHum;
+    union_sensor.panel_union.tem_hum.ui_LabelFportTemHum = ui_LabelFportTemHum;
     union_sensor.panel_union.tem_hum.ui_LabelDevEUITemHum = ui_LabelDevEUITemHum;
     union_sensor.panel_union.tem_hum.ui_LabelNameTemHum = ui_LabelNameTemHum;
     union_sensor.panel_union.tem_hum.ui_PanelSignalStrengthTemHum = ui_PanelSignalStrengthTemHum;
@@ -511,7 +525,7 @@ panel_with_type create_tem_hum(uint8_t index, lv_obj_t *parent)
     union_sensor.panel_union.tem_hum.ui_PanelSensorNodeDeleteTemHum = ui_PanelSensorNodeDeleteTemHum;
     union_sensor.panel_union.tem_hum.ui_ImageDeleteTemHum = ui_ImageDeleteTemHum;
 
-    union_sensor.panel_type = 1;
+    union_sensor.panel_type = TEM_HUM_TYPE;
 
     lv_obj_set_x(union_sensor.panel_union.tem_hum.ui_PanelSensorTemHum, x_by_index(index));
     lv_obj_set_y(union_sensor.panel_union.tem_hum.ui_PanelSensorTemHum, y_by_index(index));

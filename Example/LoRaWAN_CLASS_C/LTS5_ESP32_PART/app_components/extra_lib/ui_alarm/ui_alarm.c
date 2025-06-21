@@ -19,6 +19,7 @@ lv_obj_t * ui_PanelSensorNodeAlarm;
 lv_obj_t * ui_PanelChartAlarm;
 lv_obj_t * ui_ChartDisplayAlarm;
 lv_obj_t * ui_LabelTypeAlarm;
+lv_obj_t * ui_LabelFportAlarm;
 lv_obj_t * ui_LabelDevEUIAlarm;
 lv_obj_t * ui_LabelNameAlarm;
 lv_obj_t * ui_PanelSignalStrengthAlarm;

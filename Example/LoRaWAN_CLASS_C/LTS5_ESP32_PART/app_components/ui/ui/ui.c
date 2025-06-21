@@ -9,9 +9,12 @@
 lv_obj_t * ui_ButtonSaveConfig;
 lv_obj_t * ui_LabelSaveConfig;
 
+// lv_obj_t * ui_ButtonSendActivate_TTN_connect;
+// lv_obj_t * ui_LabelSendActivate_TTN_connect;
+
 ///////////////////// VARIABLES ////////////////////
 void Boot_Animation(lv_obj_t * TargetObject, int delay);
-void StarMove3_Animation(lv_obj_t * TargetObject, int delay);
+// void StarMove3_Animation(lv_obj_t * TargetObject, int delay);
 void ProductMove1_Animation(lv_obj_t * TargetObject, int delay);
 void ProductMove2_Animation(lv_obj_t * TargetObject, int delay);
 void ProductMove3_Animation(lv_obj_t * TargetObject, int delay);
@@ -19,12 +22,13 @@ void ProductMove4_Animation(lv_obj_t * TargetObject, int delay);
 void ProductMove5_Animation(lv_obj_t * TargetObject, int delay);
 void ProductMove6_Animation(lv_obj_t * TargetObject, int delay);
 void LogoMove1_Animation(lv_obj_t * TargetObject, int delay);
-void StarMove2_Animation(lv_obj_t * TargetObject, int delay);
-void StarMove1_Animation(lv_obj_t * TargetObject, int delay);
+// void StarMove2_Animation(lv_obj_t * TargetObject, int delay);
+// void StarMove1_Animation(lv_obj_t * TargetObject, int delay);
 void LogoMove2_Animation(lv_obj_t * TargetObject, int delay);
-void LabelMove1_Animation(lv_obj_t * TargetObject, int delay);
-void LabelMove2_Animation(lv_obj_t * TargetObject, int delay);
+// void LabelMove1_Animation(lv_obj_t * TargetObject, int delay);
+// void LabelMove2_Animation(lv_obj_t * TargetObject, int delay);
 void NewPanelArrive_Animation(lv_obj_t * TargetObject, int delay);
+void LoRaParams_Page_Notice_Message_Animation(lv_obj_t * TargetObject, int delay, int leave_time_ms);
 
 ///////////////////// VARIABLES ////////////////////
 void TipReturn_Animation(lv_obj_t * TargetObject, int delay);
@@ -51,9 +55,13 @@ lv_obj_t * ui_ContainerHomePageMain;
 lv_obj_t * ui_ImageHomePageMain;
 lv_obj_t * ui_LabelHomePageMain;
 void ui_event_ContainerSettingMain(lv_event_t * e);
-lv_obj_t * ui_ContainerSettingMain;
-lv_obj_t * ui_ImageSettingMain;
-lv_obj_t * ui_LabelSettingMain;
+lv_obj_t * ui_ContainerSettingPageMain;
+lv_obj_t * ui_ImageSettingPageMain;
+lv_obj_t * ui_LabelSettingPageMain;
+void ui_event_ContainerLoRaParamsMain(lv_event_t * e);
+lv_obj_t * ui_ContainerLoRaPageMain;
+lv_obj_t * ui_ImageLoRaPageMain;
+lv_obj_t * ui_LabelLoRaPageMain;
 lv_obj_t * ui_ImageLogoMain;
 lv_obj_t * ui_PanelSeparateTableScreenMain;
 lv_obj_t * ui_PanelBanner;
@@ -63,6 +71,8 @@ lv_obj_t * ui_ContainerNewMessageNotice;
 lv_obj_t * ui_LabelNewMessageNotice;
 lv_obj_t * ui_ContainerRefreshMessageNotice;
 lv_obj_t * ui_LabelRefreshMessageNotice;
+lv_obj_t * ui_ContainerMessageNoticeMain;
+lv_obj_t * ui_LabelMessageNoticeMain;
 lv_obj_t * ui_PanelPanel;
 lv_obj_t * ui_PanelPanelFilter;
 lv_obj_t * ui_LabelPanelNumber;
@@ -74,23 +84,32 @@ void ui_event_DropdownSelectBatteryLevel(lv_event_t * e);
 lv_obj_t * ui_DropdownSelectBatteryLevel;
 lv_obj_t * ui_ImageBatteryLevelSort;
 lv_obj_t * ui_PanelContainer;
+lv_obj_t * ui_LabelNoPanelDataReceived;
 
 
 // SCREEN: ui_ScreenSetting
 void ui_ScreenSetting_screen_init(void);
 lv_obj_t * ui_ScreenSetting;
-lv_obj_t * ui_ContainerleftSetting;
-void ui_event_ContainerHomepageSetting(lv_event_t * e);
-lv_obj_t * ui_ContainerHomepageSetting;
-lv_obj_t * ui_ImageHomepageSetting;
-lv_obj_t * ui_LabelHomepageSetting;
-lv_obj_t * ui_ContainerSettingSetting;
-lv_obj_t * ui_ImageSettingSetting;
-lv_obj_t * ui_LabelSettingSetting;
+lv_obj_t * ui_ContainerLeftSetting;
+void ui_event_ContainerMainSetting(lv_event_t * e);
+lv_obj_t * ui_ContainerHomePageSetting;
+lv_obj_t * ui_ImageHomePageSetting;
+lv_obj_t * ui_LabelHomePageSetting;
+lv_obj_t * ui_ContainerSettingPageSetting;
+lv_obj_t * ui_ImageSettingPageSetting;
+lv_obj_t * ui_LabelSettingPageSetting;
+void ui_event_ContainerLoRaParamsSetting(lv_event_t * e);
+lv_obj_t * ui_ContainerLoRaPageSetting;
+lv_obj_t * ui_ImageLoRaPageSetting;
+lv_obj_t * ui_LabelLoRaPageSetting;
 lv_obj_t * ui_ImageLogoSetting;
 lv_obj_t * ui_PanelSeparateTableScreenSetting;
 lv_obj_t * ui_PanelSystem;
 lv_obj_t * ui_LabelSystemSetting;
+lv_obj_t * ui_PanelBrightnessAdjustment;
+lv_obj_t * ui_LabelBrightnessAdjustment;
+void ui_event_SliderBrightnessAdjustment(lv_event_t * e);
+lv_obj_t * ui_SliderBrightnessAdjustment;
 lv_obj_t * ui_PanelTemUnit;
 lv_obj_t * ui_LabelTemUnit;
 void ui_event_DropdownTemUnit(lv_event_t * e);
@@ -101,10 +120,10 @@ lv_obj_t * ui_LabelBootAnimation;
 void ui_event_DropdownBootAnimationSwitch(lv_event_t * e);
 // lv_obj_t * ui_CheckboxBootAnimation;
 lv_obj_t * ui_DropdownBootAnimationSwitch;
-lv_obj_t * ui_PanelBrightnessAdjustment;
-lv_obj_t * ui_LabelBrightnessAdjustment;
-void ui_event_SliderBrightnessAdjustment(lv_event_t * e);
-lv_obj_t * ui_SliderBrightnessAdjustment;
+lv_obj_t * ui_PanelFportDisplaySwitch;
+lv_obj_t * ui_LabelFportDisplay;
+void ui_event_DropdownFportDisplaySwitch(lv_event_t * e);
+lv_obj_t * ui_DropdownFportDisplaySwitch;
 lv_obj_t * ui_LabelSystemInformation;
 lv_obj_t * ui_PanelModel;
 lv_obj_t * ui_LabelModel;
@@ -115,8 +134,60 @@ lv_obj_t * ui_LabelVersionValue;
 lv_obj_t * ui_PanelBootTime;
 lv_obj_t * ui_LabelBootTime;
 lv_obj_t * ui_LabelBootTimeValue;
+
+// SCREEN: ui_ScreenLoRaParams
+void ui_ScreenLoRaParams_screen_init(void);
+lv_obj_t * ui_ScreenLoRaParams;
+lv_obj_t * ui_ContainerLeftLoRaParams;
+void ui_event_ContainerHomePageLoRaParams(lv_event_t * e);
+lv_obj_t * ui_ContainerHomePageLoRaParams;
+lv_obj_t * ui_ImageHomePageLoRaParams;
+lv_obj_t * ui_LabelHomePageLoRaParams;
+void ui_event_ContainerSettingPageLoRaParams(lv_event_t * e);
+lv_obj_t * ui_ContainerSettingPageLoRaParams;
+lv_obj_t * ui_ImageSettingPageLoRaParams;
+lv_obj_t * ui_LabelSettingPageLoRaParams;
+lv_obj_t * ui_ContainerLoRaPageLoRaParams;
+lv_obj_t * ui_ImageLoRaPageLoRaParams;
+lv_obj_t * ui_LabelLoRaPageLoRaParams;
+lv_obj_t * ui_ImageLogoLoRaParams;
+lv_obj_t * ui_PanelSeparateTableScreenLoRaParams;
+lv_obj_t * ui_ContainerMessageNoticeLoRaParams;
+lv_obj_t * ui_LabelMessageNoticeLoRaParams;
+lv_obj_t * ui_PanelPanelLoRaParams;
+lv_obj_t * ui_PanelLA66FwLoRaParams;
+lv_obj_t * ui_DropdownCurrentFwLoRaParams;
+lv_obj_t * ui_LabelFwVersionLoRaParams;
+void ui_event_ButtonFwDetectLoRaParams(lv_event_t * e);
+lv_obj_t * ui_ButtonFwDetectLoRaParams;
+lv_obj_t * ui_LabelFwDetectLoRaParams;
+// void ui_event_ButtonGetLA66ConfigLoRaParams(lv_event_t * e);
+// lv_obj_t * ui_ButtonGetLA66ConfigLoRaParams;
+// lv_obj_t * ui_LabelGetLA66ConfigLoRaParams;
+lv_obj_t * ui_PanelFontSizeLoRaParams;
+lv_obj_t * ui_LabelFontSizeLoRaParams;
+void ui_event_DropdownFontSizeLoRaParams(lv_event_t * e);
+lv_obj_t * ui_DropdownFontSizeLoRaParams;
+lv_obj_t * ui_PanelLoRaWANNetworkStatusLoRaParams;
+lv_obj_t * ui_DropdownLoRaWANNetworkStatusLoRaParams;
+void ui_event_ButtonLoRaWANNetworkActivateLoRaParams(lv_event_t * e);
+lv_obj_t * ui_ButtonLoRaWANNetworkActivateLoRaParams;
+lv_obj_t * ui_LabelLoRaWANNetworkActivateLoRaParams;
+lv_obj_t * ui_PanelLoRaWANNetworkStatusHideLoRaParams;
+void ui_event_ButtonFontSizeIncreaseLoRaParams(lv_event_t * e);
+lv_obj_t * ui_ButtonFontSizeIncreaseLoRaParams;
+lv_obj_t * ui_LabelFontSizeIncreaseLoRaParams;
+void ui_event_ButtonFontSizeDecreaseLoRaParams(lv_event_t * e);
+lv_obj_t * ui_ButtonFontSizeDecreaseLoRaParams;
+lv_obj_t * ui_LabelFontSizeDecreaseLoRaParams;
+lv_obj_t * ui_PanelDialogLoRaParams;
+lv_obj_t * ui_TextAreaDialogLoRaParams;
+// CUSTOM VARIABLES
+
 lv_obj_t * ui____initial_actions0;
+
 const lv_img_dsc_t * ui_imgset_product_[6] = {&ui_img_product_1_png, &ui_img_product_2_png, &ui_img_product_3_png, &ui_img_product_4_png, &ui_img_product_5_png, &ui_img_product_6_png};
+// const lv_img_dsc_t * ui_imgset_lora_module_[1] = {&ui_img_lora_module_32_png};
 
 void ui_event_switch_display(lv_event_t * e);
 void ui_event_switch_normal_func(lv_event_t * e);
@@ -478,6 +549,105 @@ void NewPanelArrive_Animation(lv_obj_t * TargetObject, int delay)
 
 }
 
+void LoRaParams_Page_Notice_Message_Animation(lv_obj_t * TargetObject, int delay, int leave_time_ms)
+{
+    static const int32_t y_initial_pos = -270;
+    static const int32_t y_temp_pos_1 = -234;
+    static const int32_t y_end_pos = y_initial_pos;
+
+    ui_anim_user_data_t * PropertyAnimation_0_user_data = lv_mem_alloc(sizeof(ui_anim_user_data_t));
+    PropertyAnimation_0_user_data->target = TargetObject;
+    PropertyAnimation_0_user_data->val = -1;
+    lv_anim_t PropertyAnimation_0;
+    lv_anim_init(&PropertyAnimation_0);
+    lv_anim_set_time(&PropertyAnimation_0, 1);
+    lv_anim_set_user_data(&PropertyAnimation_0, PropertyAnimation_0_user_data);
+    lv_anim_set_custom_exec_cb(&PropertyAnimation_0, _ui_anim_callback_set_y);//_ui_anim_callback_set_x
+    lv_anim_set_values(&PropertyAnimation_0, y_initial_pos, y_temp_pos_1);
+    lv_anim_set_path_cb(&PropertyAnimation_0, lv_anim_path_linear);
+    lv_anim_set_delay(&PropertyAnimation_0, delay + 0);
+    // lv_anim_set_deleted_cb(&PropertyAnimation_0, _ui_anim_callback_free_user_data);
+    lv_anim_set_playback_time(&PropertyAnimation_0, 0);
+    lv_anim_set_playback_delay(&PropertyAnimation_0, 0);
+    lv_anim_set_repeat_count(&PropertyAnimation_0, 0);
+    lv_anim_set_repeat_delay(&PropertyAnimation_0, 0);
+    lv_anim_set_early_apply(&PropertyAnimation_0, false);
+    lv_anim_start(&PropertyAnimation_0);
+    ui_anim_user_data_t * PropertyAnimation_1_user_data = lv_mem_alloc(sizeof(ui_anim_user_data_t));
+    PropertyAnimation_1_user_data->target = TargetObject;
+    PropertyAnimation_1_user_data->val = -1;
+    lv_anim_t PropertyAnimation_1;
+    lv_anim_init(&PropertyAnimation_1);
+    lv_anim_set_time(&PropertyAnimation_1, 1);
+    lv_anim_set_user_data(&PropertyAnimation_1, PropertyAnimation_1_user_data);
+    lv_anim_set_custom_exec_cb(&PropertyAnimation_1, _ui_anim_callback_set_opacity);
+    lv_anim_set_values(&PropertyAnimation_1, 255, 0);
+    lv_anim_set_path_cb(&PropertyAnimation_1, lv_anim_path_linear);
+    lv_anim_set_delay(&PropertyAnimation_1, delay + 0);
+    // lv_anim_set_deleted_cb(&PropertyAnimation_1, _ui_anim_callback_free_user_data);
+    lv_anim_set_playback_time(&PropertyAnimation_1, 0);
+    lv_anim_set_playback_delay(&PropertyAnimation_1, 0);
+    lv_anim_set_repeat_count(&PropertyAnimation_1, 0);
+    lv_anim_set_repeat_delay(&PropertyAnimation_1, 0);
+    lv_anim_set_early_apply(&PropertyAnimation_1, false);
+    lv_anim_start(&PropertyAnimation_1);
+    ui_anim_user_data_t * PropertyAnimation_2_user_data = lv_mem_alloc(sizeof(ui_anim_user_data_t));
+    PropertyAnimation_2_user_data->target = TargetObject;
+    PropertyAnimation_2_user_data->val = -1;
+    lv_anim_t PropertyAnimation_2;
+    lv_anim_init(&PropertyAnimation_2);
+    lv_anim_set_time(&PropertyAnimation_2, 20);
+    lv_anim_set_user_data(&PropertyAnimation_2, PropertyAnimation_2_user_data);
+    lv_anim_set_custom_exec_cb(&PropertyAnimation_2, _ui_anim_callback_set_opacity);
+    lv_anim_set_values(&PropertyAnimation_2, 0, 255);
+    lv_anim_set_path_cb(&PropertyAnimation_2, lv_anim_path_linear);
+    lv_anim_set_delay(&PropertyAnimation_2, delay + 100);
+    // lv_anim_set_deleted_cb(&PropertyAnimation_2, _ui_anim_callback_free_user_data);
+    lv_anim_set_playback_time(&PropertyAnimation_2, 0);
+    lv_anim_set_playback_delay(&PropertyAnimation_2, 0);
+    lv_anim_set_repeat_count(&PropertyAnimation_2, 0);
+    lv_anim_set_repeat_delay(&PropertyAnimation_2, 0);
+    lv_anim_set_early_apply(&PropertyAnimation_2, false);
+    lv_anim_start(&PropertyAnimation_2);
+    ui_anim_user_data_t * PropertyAnimation_3_user_data = lv_mem_alloc(sizeof(ui_anim_user_data_t));
+    PropertyAnimation_3_user_data->target = TargetObject;
+    PropertyAnimation_3_user_data->val = -1;
+    lv_anim_t PropertyAnimation_3;
+    lv_anim_init(&PropertyAnimation_3);
+    lv_anim_set_time(&PropertyAnimation_3, 400);
+    lv_anim_set_user_data(&PropertyAnimation_3, PropertyAnimation_3_user_data);
+    lv_anim_set_custom_exec_cb(&PropertyAnimation_3, _ui_anim_callback_set_opacity);
+    lv_anim_set_values(&PropertyAnimation_3, 255, 0);
+    lv_anim_set_path_cb(&PropertyAnimation_3, lv_anim_path_linear);
+    lv_anim_set_delay(&PropertyAnimation_3, delay + leave_time_ms);//1500   delay + 2500
+    // lv_anim_set_deleted_cb(&PropertyAnimation_3, _ui_anim_callback_free_user_data);
+    lv_anim_set_playback_time(&PropertyAnimation_3, 0);
+    lv_anim_set_playback_delay(&PropertyAnimation_3, 0);
+    lv_anim_set_repeat_count(&PropertyAnimation_3, 0);
+    lv_anim_set_repeat_delay(&PropertyAnimation_3, 0);
+    lv_anim_set_early_apply(&PropertyAnimation_3, false);
+    lv_anim_start(&PropertyAnimation_3);
+    ui_anim_user_data_t * PropertyAnimation_4_user_data = lv_mem_alloc(sizeof(ui_anim_user_data_t));
+    PropertyAnimation_4_user_data->target = TargetObject;
+    PropertyAnimation_4_user_data->val = -1;
+    lv_anim_t PropertyAnimation_4;
+    lv_anim_init(&PropertyAnimation_4);
+    lv_anim_set_time(&PropertyAnimation_4, 100);
+    lv_anim_set_user_data(&PropertyAnimation_4, PropertyAnimation_4_user_data);
+    lv_anim_set_custom_exec_cb(&PropertyAnimation_4, _ui_anim_callback_set_y);//_ui_anim_callback_set_x
+    lv_anim_set_values(&PropertyAnimation_4, y_temp_pos_1, y_end_pos);
+    lv_anim_set_path_cb(&PropertyAnimation_4, lv_anim_path_linear);
+    lv_anim_set_delay(&PropertyAnimation_4, delay + leave_time_ms + 400);//1900   delay + 2900
+    // lv_anim_set_deleted_cb(&PropertyAnimation_4, _ui_anim_callback_free_user_data);
+    lv_anim_set_playback_time(&PropertyAnimation_4, 0);
+    lv_anim_set_playback_delay(&PropertyAnimation_4, 0);
+    lv_anim_set_repeat_count(&PropertyAnimation_4, 0);
+    lv_anim_set_repeat_delay(&PropertyAnimation_4, 0);
+    lv_anim_set_early_apply(&PropertyAnimation_4, false);
+    lv_anim_start(&PropertyAnimation_4);
+
+}
+
 ///////////////////// FUNCTIONS ////////////////////
 void ui_event_ScreenBoot(lv_event_t * e)
 {
@@ -503,6 +673,14 @@ void ui_event_ContainerSettingMain(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
         _ui_screen_change(&ui_ScreenSetting, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, &ui_ScreenSetting_screen_init);
+    }
+}
+void ui_event_ContainerLoRaParamsMain(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_ScreenLoRaParams, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, &ui_ScreenLoRaParams_screen_init);
     }
 }
 void ui_event_ImageProfile(lv_event_t * e)
@@ -534,7 +712,7 @@ void ui_event_DropdownSelectBatteryLevel(lv_event_t * e)
         BatteryLevelSort(e);
     }
 }
-void ui_event_ContainerHomepageSetting(lv_event_t * e)
+void ui_event_ContainerMainSetting(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
@@ -542,12 +720,41 @@ void ui_event_ContainerHomepageSetting(lv_event_t * e)
         _ui_screen_change(&ui_ScreenMain, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, &ui_ScreenMain_screen_init);
     }
 }
+void ui_event_ContainerLoRaParamsSetting(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_ScreenLoRaParams, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, &ui_ScreenLoRaParams_screen_init);
+    }
+}
+
+void ui_event_SliderBrightnessAdjustment(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_VALUE_CHANGED) {
+        BrightnessAdjust(e);
+    }
+}
+static void dropdown_symbol_adjust(lv_obj_t * dropdown)
+{
+    if(lv_dropdown_is_open(dropdown) == true)
+        lv_dropdown_set_symbol(dropdown, LV_SYMBOL_LEFT);
+    else
+        lv_dropdown_set_symbol(dropdown, LV_SYMBOL_DOWN);
+}
 void ui_event_DropdownTemUnit(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_VALUE_CHANGED) {
         TemUnitSwitch(e);
+
+        dropdown_symbol_adjust(target);
+    }
+    else if(event_code == LV_EVENT_CLICKED) {
+        dropdown_symbol_adjust(target);
     }
 }
 // void ui_event_CheckboxBootAnimation(lv_event_t * e)
@@ -564,17 +771,26 @@ void ui_event_DropdownBootAnimationSwitch(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_VALUE_CHANGED) {
         BootScreenSwitch(e);
+
+        dropdown_symbol_adjust(target);
+    }
+    else if(event_code == LV_EVENT_CLICKED) {
+        dropdown_symbol_adjust(target);
     }
 }
-void ui_event_SliderBrightnessAdjustment(lv_event_t * e)
+void ui_event_DropdownFportDisplaySwitch(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_VALUE_CHANGED) {
-        BrightnessAdjust(e);
+        FportDisplaySwitch(e);
+
+        dropdown_symbol_adjust(target);
+    }
+    else if(event_code == LV_EVENT_CLICKED) {
+        dropdown_symbol_adjust(target);
     }
 }
-
 void ui_event_ConfigSave(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -591,6 +807,7 @@ void ui_event_switch_display(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
         // _ui_screen_change(&ui_ScreenDisplayMain, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, &ui_ScreenDisplayMain_screen_init);
+        // SendJoin(e);
     }
 }
 void ui_event_switch_normal_func(lv_event_t * e)
@@ -599,6 +816,88 @@ void ui_event_switch_normal_func(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
         // _ui_screen_change(&ui_ScreenMain, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, &ui_ScreenMain_screen_init);
+    }
+}
+
+// void ui_event_SendActivate_TTN_connect(lv_event_t * e)
+// {
+//     lv_event_code_t event_code = lv_event_get_code(e);
+//     lv_obj_t * target = lv_event_get_target(e);
+//     if(event_code == LV_EVENT_CLICKED) {
+//         // SendJoin(e);
+//         _ui_screen_change(&ui_ScreenLoRaParams, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, &ui_ScreenLoRaParams_screen_init);
+//     }
+// }
+
+void ui_event_ContainerHomePageLoRaParams(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_ScreenMain, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, &ui_ScreenMain_screen_init);
+    }
+}
+
+void ui_event_ContainerSettingPageLoRaParams(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_ScreenSetting, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, &ui_ScreenSetting_screen_init);
+    }
+}
+
+void ui_event_ButtonFwDetectLoRaParams(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        LA66FirmwareRecognize(e);
+    }
+}
+
+// void ui_event_ButtonGetLA66ConfigLoRaParams(lv_event_t * e)
+// {
+//     lv_event_code_t event_code = lv_event_get_code(e);
+
+//     if(event_code == LV_EVENT_CLICKED) {
+//         LA66ConfigurationInformationUpdate(e);
+//     }
+// }
+
+void ui_event_DropdownFontSizeLoRaParams(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_VALUE_CHANGED) {
+        ChangeFontSizeLoRaParams(e);
+    }
+}
+
+void ui_event_ButtonLoRaWANNetworkActivateLoRaParams(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        ActivateLoRaWANNetwork(e);
+    }
+}
+
+void ui_event_ButtonFontSizeIncreaseLoRaParams(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        FontSizeIncreaseLoRaParams(e);
+    }
+}
+
+void ui_event_ButtonFontSizeDecreaseLoRaParams(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        FontSizeDecreaseLoRaParams(e);
     }
 }
 
@@ -613,7 +912,7 @@ void ui_init(void)
     ui_ScreenBoot_screen_init();
     ui_ScreenMain_screen_init();
     ui_ScreenSetting_screen_init();
-
+    ui_ScreenLoRaParams_screen_init();
 
 
     ui____initial_actions0 = lv_obj_create(NULL);

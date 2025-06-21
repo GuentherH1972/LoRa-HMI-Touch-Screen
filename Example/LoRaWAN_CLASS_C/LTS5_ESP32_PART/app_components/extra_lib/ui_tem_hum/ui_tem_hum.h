@@ -23,6 +23,7 @@ extern lv_obj_t * ui_PanelSensorNodeTemHum;
 extern lv_obj_t * ui_PanelChartTemHum;
 extern lv_obj_t * ui_ChartDisplayTemHum;
 extern lv_obj_t * ui_LabelTypeTemHum;
+extern lv_obj_t * ui_LabelFportTemHum;
 extern lv_obj_t * ui_LabelDevEUITemHum;
 extern lv_obj_t * ui_LabelNameTemHum;
 extern lv_obj_t * ui_PanelSignalStrengthTemHum;

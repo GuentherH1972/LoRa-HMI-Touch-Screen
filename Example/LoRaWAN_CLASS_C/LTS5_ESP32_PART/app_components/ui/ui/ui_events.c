@@ -5,6 +5,22 @@
 
 #include "ui.h"
 
+const lv_font_t *font_size_address_table[] = {
+	&lv_font_montserrat_12,
+	&lv_font_montserrat_14,
+	&lv_font_montserrat_16,
+	&lv_font_montserrat_18,
+	&lv_font_montserrat_20,
+	&lv_font_montserrat_22,
+	&lv_font_montserrat_24,
+	&lv_font_montserrat_26,
+	&lv_font_montserrat_28,
+	&lv_font_montserrat_30,
+	&lv_font_montserrat_32,
+	&lv_font_montserrat_34,
+	&lv_font_montserrat_36
+};
+
 void TimeSort(lv_event_t * e)
 {
 	// Your code here
@@ -83,6 +99,11 @@ void BootScreenSwitch(lv_event_t * e)
 
 }
 
+void FportDisplaySwitch(lv_event_t * e)
+{
+	
+}
+
 void AllConfigSave(lv_event_t * e)
 {
 	if(nvs_store_complete_flag_get() == true) {
@@ -90,12 +111,92 @@ void AllConfigSave(lv_event_t * e)
 	}
 }
 
+// void SendJoin(lv_event_t * e)
+// {
+// 	if(activate_str_send_complete_flag_get() == true) {
+// 		activate_str_send_button_press_flag_set(true);
+// 	}
+// }
+
 void BrightnessAdjust(lv_event_t * e)
 {
 	// Your code here
 	int32_t value = lv_slider_get_value(ui_SliderBrightnessAdjustment);
 	
-	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, BRIGHTNESS_start + value * BRIGHTNESS_STEP);//20 250
+	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, BRIGHTNESS_MIN + value * BRIGHTNESS_STEP);
 	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
 	fprintf(stderr,"Slider BL Brightness level change to: %ld\n", value);
+}
+
+void LA66FirmwareRecognize(lv_event_t * e)
+{
+	// Your code here
+	if(fw_detect_str_send_complete_flag_get() == true) {
+		fw_detect_str_send_button_press_flag_set(true);
+	}
+}
+
+// void LA66ConfigurationInformationUpdate(lv_event_t * e)
+// {
+// 	// Your code here
+// 	if(data_update_str_send_complete_flag_get() == true) {
+// 		send_data_update_button_press_flag_set(true);
+// 	}
+// }
+
+void ChangeFontSizeLoRaParams(lv_event_t * e)
+{
+	// Your code here
+	uint16_t option_index = lv_dropdown_get_selected(ui_DropdownFontSizeLoRaParams);
+	// printf("option_index %u\r\n", (unsigned int)option_index);
+
+	if(option_index > sizeof(font_size_address_table) / sizeof(font_size_address_table[0]) - 1) {
+		option_index = sizeof(font_size_address_table) / sizeof(font_size_address_table[0]) - 1;
+	}
+	lv_obj_set_style_text_font(ui_TextAreaDialogLoRaParams, font_size_address_table[option_index], LV_PART_MAIN | LV_STATE_DEFAULT);
+}
+
+void ActivateLoRaWANNetwork(lv_event_t * e)
+{
+	// Your code here
+	if(activate_str_send_complete_flag_get() == true) {
+		activate_str_send_button_press_flag_set(true);
+	}
+}
+
+void FontSizeIncreaseLoRaParams(lv_event_t * e)
+{
+	// Your code here
+	
+	const lv_font_t *p = lv_obj_get_style_text_font(ui_TextAreaDialogLoRaParams, LV_PART_MAIN | LV_STATE_DEFAULT);
+	// uint8_t current_font_size_index = 0;
+	uint8_t font_size_index = 0;
+	printf("font_and_size address %p\r\n", p);//%s
+	for(uint8_t i = 0;i < sizeof(font_size_address_table) / sizeof(font_size_address_table[0]);i++) {
+		if(font_size_address_table[i] == p) {
+			font_size_index = (i + 1 >= sizeof(font_size_address_table) / sizeof(font_size_address_table[0]) ? sizeof(font_size_address_table) / sizeof(font_size_address_table[0]) - 1 : i + 1);
+			break;
+		}
+	}
+	lv_obj_set_style_text_font(ui_TextAreaDialogLoRaParams, font_size_address_table[font_size_index], LV_PART_MAIN | LV_STATE_DEFAULT);
+	uint16_t index = lv_dropdown_get_selected(ui_DropdownFontSizeLoRaParams) + 1 <= 12 ? lv_dropdown_get_selected(ui_DropdownFontSizeLoRaParams) + 1 : 12; 
+	lv_dropdown_set_selected(ui_DropdownFontSizeLoRaParams, index); 
+}
+
+void FontSizeDecreaseLoRaParams(lv_event_t * e)
+{
+	// Your code here
+
+	const lv_font_t *p = lv_obj_get_style_text_font(ui_TextAreaDialogLoRaParams, LV_PART_MAIN | LV_STATE_DEFAULT);
+	uint8_t font_size_index = 0;
+	printf("font_and_size address %p\r\n", p);//%s
+	for(uint8_t i = 0;i < sizeof(font_size_address_table) / sizeof(font_size_address_table[0]);i++) {
+		if(font_size_address_table[i] == p) {
+			font_size_index = (i - 1 < 0 ? 0 : i - 1);
+			break;
+		}
+	}
+	lv_obj_set_style_text_font(ui_TextAreaDialogLoRaParams, font_size_address_table[font_size_index], LV_PART_MAIN | LV_STATE_DEFAULT);
+	uint16_t index = lv_dropdown_get_selected(ui_DropdownFontSizeLoRaParams) - 1 >= 0 ? lv_dropdown_get_selected(ui_DropdownFontSizeLoRaParams) - 1 : 0; 
+	lv_dropdown_set_selected(ui_DropdownFontSizeLoRaParams, index); 
 }

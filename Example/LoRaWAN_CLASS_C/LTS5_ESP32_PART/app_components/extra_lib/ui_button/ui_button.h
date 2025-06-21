@@ -23,6 +23,7 @@ extern lv_obj_t * ui_PanelSensorNodeButton;
 extern lv_obj_t * ui_PanelChartButton;
 extern lv_obj_t * ui_ChartDisplayButton;
 extern lv_obj_t * ui_LabelTypeButton;
+extern lv_obj_t * ui_LabelFportButton;
 extern lv_obj_t * ui_LabelDevEUIButton;
 extern lv_obj_t * ui_LabelNameButton;
 extern lv_obj_t * ui_PanelSignalStrengthButton;

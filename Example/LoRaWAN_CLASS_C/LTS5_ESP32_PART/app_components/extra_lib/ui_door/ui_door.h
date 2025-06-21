@@ -23,6 +23,7 @@ extern lv_obj_t * ui_PanelSensorNodeDoor;
 extern lv_obj_t * ui_PanelChartDoor;
 extern lv_obj_t * ui_ChartDisplayDoor;
 extern lv_obj_t * ui_LabelTypeDoor;
+extern lv_obj_t * ui_LabelFportDoor;
 extern lv_obj_t * ui_LabelDevEUIDoor;
 extern lv_obj_t * ui_LabelNameDoor;
 extern lv_obj_t * ui_PanelSignalStrengthDoor;

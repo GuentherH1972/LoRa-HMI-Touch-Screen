@@ -19,6 +19,7 @@ lv_obj_t * ui_PanelSensorNodeOccupied;
 lv_obj_t * ui_PanelChartOccupied;
 lv_obj_t * ui_ChartDisplayOccupied;
 lv_obj_t * ui_LabelTypeOccupied;
+lv_obj_t * ui_LabelFportOccupied;
 lv_obj_t * ui_LabelDevEUIOccupied;
 lv_obj_t * ui_LabelNameOccupied;
 lv_obj_t * ui_PanelSignalStrengthOccupied;

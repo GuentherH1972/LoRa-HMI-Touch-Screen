@@ -46,6 +46,7 @@ panel_with_type create_alarm(uint8_t index, lv_obj_t *parent)
     ui_ChartDisplayAlarm = lv_chart_create(ui_PanelChartAlarm);
     lv_obj_set_width(ui_ChartDisplayAlarm, 156);
     lv_obj_set_height(ui_ChartDisplayAlarm, 50);
+    lv_obj_clear_flag(ui_ChartDisplayAlarm, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_align(ui_ChartDisplayAlarm, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_ChartDisplayAlarm, LV_OBJ_FLAG_EVENT_BUBBLE);     /// Flags
     lv_chart_set_type(ui_ChartDisplayAlarm, LV_CHART_TYPE_NONE);
@@ -70,9 +71,9 @@ panel_with_type create_alarm(uint8_t index, lv_obj_t *parent)
 
     lv_obj_set_style_line_color(ui_ChartDisplayAlarm, lv_color_hex(0x2121E2), LV_PART_ITEMS | LV_STATE_DEFAULT);
     lv_obj_set_style_line_opa(ui_ChartDisplayAlarm, 255, LV_PART_ITEMS | LV_STATE_DEFAULT);
-    lv_obj_set_style_line_width(ui_ChartDisplayAlarm, 2, LV_PART_ITEMS | LV_STATE_DEFAULT);
+    lv_obj_set_style_line_width(ui_ChartDisplayAlarm, 1, LV_PART_ITEMS | LV_STATE_DEFAULT);
 
-    lv_obj_set_style_line_width(ui_ChartDisplayAlarm, 2, LV_PART_TICKS | LV_STATE_DEFAULT);
+    lv_obj_set_style_line_width(ui_ChartDisplayAlarm, 1, LV_PART_TICKS | LV_STATE_DEFAULT);
 
     ui_LabelTypeAlarm = lv_label_create(ui_ChartDisplayAlarm);
     lv_obj_set_width(ui_LabelTypeAlarm, LV_SIZE_CONTENT);   /// 1
@@ -82,6 +83,18 @@ panel_with_type create_alarm(uint8_t index, lv_obj_t *parent)
     lv_obj_set_style_text_color(ui_LabelTypeAlarm, lv_color_hex(0x94AEB4), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelTypeAlarm, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelTypeAlarm, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_LabelFportAlarm = lv_label_create(ui_ChartDisplayAlarm);
+    lv_obj_set_width(ui_LabelFportAlarm, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_LabelFportAlarm, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_LabelFportAlarm, 10);//  5  0  1
+    lv_obj_set_y(ui_LabelFportAlarm, -10);// -5 -7  -12
+    lv_obj_set_align(ui_LabelFportAlarm, LV_ALIGN_TOP_RIGHT);
+    lv_label_set_text(ui_LabelFportAlarm, "Fport\n100");//   100   Fport: 100
+    lv_obj_set_style_text_align(ui_LabelFportAlarm, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_LabelFportAlarm, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);//0x94AEB4  0x84BE84  0x9370DB  0xE6A8D7 0xFF6B6B
+    lv_obj_set_style_text_opa(ui_LabelFportAlarm, 255, LV_PART_MAIN | LV_STATE_DEFAULT);  // 192
+    lv_obj_set_style_text_font(ui_LabelFportAlarm,  &lv_font_montserrat_10, LV_PART_MAIN | LV_STATE_DEFAULT);//&lv_font_montserrat_8
 
     ui_LabelDevEUIAlarm = lv_label_create(ui_PanelSensorNodeAlarm);
     lv_obj_set_width(ui_LabelDevEUIAlarm, 80);   /// 1  LV_SIZE_CONTENT
@@ -397,6 +410,7 @@ panel_with_type create_alarm(uint8_t index, lv_obj_t *parent)
     union_sensor.panel_union.alarm.ui_PanelChartAlarm = ui_PanelChartAlarm;
     union_sensor.panel_union.alarm.ui_ChartDisplayAlarm = ui_ChartDisplayAlarm;
     union_sensor.panel_union.alarm.ui_LabelTypeAlarm = ui_LabelTypeAlarm;
+    union_sensor.panel_union.alarm.ui_LabelFportAlarm = ui_LabelFportAlarm;
     union_sensor.panel_union.alarm.ui_LabelDevEUIAlarm = ui_LabelDevEUIAlarm;
     union_sensor.panel_union.alarm.ui_LabelNameAlarm = ui_LabelNameAlarm;
     union_sensor.panel_union.alarm.ui_PanelSignalStrengthAlarm = ui_PanelSignalStrengthAlarm;

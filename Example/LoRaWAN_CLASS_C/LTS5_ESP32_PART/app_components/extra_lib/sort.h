@@ -18,13 +18,14 @@
 /* -------------------------------------------------------------------------- */
 /* --- PUBLIC MACROS -------------------------------------------------------- */
 
-#define  NULL_TYPE          (0x00)
-#define  TEM_HUM_TYPE       (0x01)
-#define  DOOR_TYPE          (0x02)
-#define  WATER_LEAK_TYPE    (0x03)
-#define  OCCUPIED_TYPE      (0x04)
-#define  BUTTON_TYPE        (0x05)
-#define  ALARM_TYPE         (0x06)
+#define NULL_TYPE          (0x00)
+#define TEM_HUM_TYPE       (0x01)
+#define DOOR_TYPE          (0x02)
+#define WATER_LEAK_TYPE    (0x03)
+#define OCCUPIED_TYPE      (0x04)
+#define BUTTON_TYPE        (0x05)
+#define ALARM_TYPE         (0x06)
+#define PANEL_TYPE_NUM      ALARM_TYPE
 
 #define DOOR_STATUS_OPEN    (0x00)
 #define DOOR_STATUS_CLOSE   (0x01)
@@ -39,7 +40,7 @@
 #define BUTTON_STATUS_ON     (0x01)
 
 #define ALARM_STATUS_OFF     (0x00)
-#define ALARM_STATUS_ALARM   (0x01)
+#define ALARM_STATUS_ON   (0x01)
 
 #define ALARM_TIMER_DISABLE  (0x00)
 #define ALARM_TIMER_ENABLE   (0x01)
@@ -53,11 +54,11 @@
 #define BATTERY_LEVEL_SORT_HIGHEST   (0x00)
 #define BATTERY_LEVEL_SORT_LOWEST    (0x01)
 
-#define BRIGHTNESS_start (30)
-#define BRIGHTNESS_max (1020)
-#define BRIGHTNESS_STEP ((BRIGHTNESS_max - BRIGHTNESS_start) / 9) 
+#define BRIGHTNESS_MIN (30)
+#define BRIGHTNESS_MAX (1020)
+#define BRIGHTNESS_STEP ((BRIGHTNESS_MAX - BRIGHTNESS_MIN) / 9) 
 
-#define LTS5_SOFTWARE_VERSION_STRING "1.0.0"
+#define LTS5_SOFTWARE_VERSION_STRING "1.1.0"
 
 /* -------------------------------------------------------------------------- */
 /* --- PUBLIC CONSTANTS ----------------------------------------------------- */
@@ -77,6 +78,7 @@ typedef struct
     lv_obj_t * ui_PanelChartTemHum;
     lv_obj_t * ui_ChartDisplayTemHum;
     lv_obj_t * ui_LabelTypeTemHum;
+    lv_obj_t * ui_LabelFportTemHum;
     lv_obj_t * ui_LabelDevEUITemHum;
     lv_obj_t * ui_LabelNameTemHum;
     lv_obj_t * ui_PanelSignalStrengthTemHum;
@@ -110,6 +112,7 @@ typedef struct
     lv_obj_t * ui_PanelChartDoor;
     lv_obj_t * ui_ChartDisplayDoor;
     lv_obj_t * ui_LabelTypeDoor;
+    lv_obj_t * ui_LabelFportDoor;
     lv_obj_t * ui_LabelDevEUIDoor;
     lv_obj_t * ui_LabelNameDoor;
     lv_obj_t * ui_PanelSignalStrengthDoor;
@@ -148,6 +151,7 @@ typedef struct
     lv_obj_t * ui_PanelChartWaterLeak;
     lv_obj_t * ui_ChartDisplayWaterLeak;
     lv_obj_t * ui_LabelTypeWaterLeak;
+    lv_obj_t * ui_LabelFportWaterLeak;
     lv_obj_t * ui_LabelDevEUIWaterLeak;
     lv_obj_t * ui_LabelNameWaterLeak;
     lv_obj_t * ui_PanelCurrentStatusLeakingWaterLeak;
@@ -186,6 +190,7 @@ typedef struct
     lv_obj_t * ui_PanelChartOccupied;
     lv_obj_t * ui_ChartDisplayOccupied;
     lv_obj_t * ui_LabelTypeOccupied;
+    lv_obj_t * ui_LabelFportOccupied;
     lv_obj_t * ui_LabelDevEUIOccupied;
     lv_obj_t * ui_LabelNameOccupied;
     lv_obj_t * ui_PanelSignalStrengthOccupied;
@@ -218,6 +223,7 @@ typedef struct
     lv_obj_t * ui_PanelChartButton;
     lv_obj_t * ui_ChartDisplayButton;
     lv_obj_t * ui_LabelTypeButton;
+    lv_obj_t * ui_LabelFportButton;
     lv_obj_t * ui_LabelDevEUIButton;
     lv_obj_t * ui_LabelNameButton;
     lv_obj_t * ui_PanelSignalStrengthButton;
@@ -251,6 +257,7 @@ typedef struct
     lv_obj_t * ui_PanelChartAlarm;
     lv_obj_t * ui_ChartDisplayAlarm;
     lv_obj_t * ui_LabelTypeAlarm;
+    lv_obj_t * ui_LabelFportAlarm;
     lv_obj_t * ui_LabelDevEUIAlarm;
     lv_obj_t * ui_LabelNameAlarm;
     lv_obj_t * ui_PanelSignalStrengthAlarm;
@@ -289,6 +296,7 @@ typedef struct
     uint8_t * status;
 
     uint8_t * bat;
+    uint8_t   fport;// uint8_t * fport;
     int8_t    data_rssi;
 } message;
 
@@ -306,10 +314,10 @@ typedef struct {
 
 typedef struct 
 {
-    panel_with_type panel_obj;                // panel_obj是LVGL的一个传感器面板
-	uint8_t         panel_obj_index;          // 索引代表元素的实际位置
-    uint8_t         top_flag;                 // 这是置顶标志，用于表示传感器是否被置顶
-    time_t          sec_arrive;               // 记录开始时间，即消息的到来时间
+    panel_with_type panel_obj;        // panel_obj是LVGL的一个传感器面板        // Panel_obj is a sensor panel of LVGL
+	uint8_t         panel_obj_index;  // 索引代表元素的实际位置                 // Index represents the actual position of the element
+    uint8_t         top_flag;         // 这是置顶标志，用于表示传感器是否被置顶  // This is a top mounted symbol used to indicate whether the sensor has been placed on top
+    time_t          sec_arrive;       // 记录开始时间，即消息的到来时间          // Record the start time, which is the arrival time of the message
 } panel_all;
 
 typedef struct 
@@ -324,10 +332,12 @@ typedef struct
 
 uint16_t x_by_index(uint16_t index);
 uint16_t y_by_index(uint16_t index);
+
 time_t get_sec(void);
 void timer_callback(lv_timer_t * timer);
 void timer_alarm_callback(lv_timer_t * timer);
-void config_save(int32_t brightness, uint16_t tem_unit, uint16_t boot_screen);
+void config_save(int32_t brightness, uint16_t tem_unit, uint16_t boot_screen, uint16_t la66_cfg_font_index, uint16_t fport_display);
+
 void initArray(DynamicArray *arr, size_t initialCapacity);
 void freeArray(DynamicArray *arr);
 void deleteElement(DynamicArray *arr, size_t index);
@@ -340,19 +350,44 @@ void panel_index_restore(DynamicArray *arr);
 
 void time_sort_value_set(uint16_t new_value);
 uint16_t time_sort_value_get(void);
+
 void battery_sort_value_set(uint16_t new_value);
 uint16_t battery_sort_value_get(void);
+
 void nvs_store_complete_flag_set(bool new_value);
 bool nvs_store_complete_flag_get(void);
+
 void save_button_press_flag_set(bool new_value);
 bool save_button_press_flag_get(void);
+
 uint8_t button_uplink_num_get(void);
 void button_uplink_num_set(uint8_t button_uplink_num_temp);
+
 DynamicArray * arr_get(void);
+
 void system_begin_sec_set(time_t new_value);
 time_t system_begin_sec_get(void);
+
 void lvgl_lock_get(void);
 void lvgl_lock_release(void);
+
+void activate_str_send_complete_flag_set(bool new_value);
+bool activate_str_send_complete_flag_get(void);
+
+void activate_str_send_button_press_flag_set(bool new_value);
+bool activate_str_send_button_press_flag_get(void);
+
+void fw_detect_str_send_complete_flag_set(bool new_value);
+bool fw_detect_str_send_complete_flag_get(void);
+
+void fw_detect_str_send_button_press_flag_set(bool new_value);
+bool fw_detect_str_send_button_press_flag_get(void);
+
+// void data_update_str_send_complete_flag_set(bool new_value);
+// bool data_update_str_send_complete_flag_get(void);
+
+// void send_data_update_button_press_flag_set(bool new_value);
+// bool send_data_update_button_press_flag_get(void);
 
 panel_with_type create_tem_hum(uint8_t index, lv_obj_t *parent); 
 panel_with_type create_door(uint8_t index, lv_obj_t *parent);

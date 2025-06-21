@@ -39,7 +39,7 @@
 #define  PANEL_WIDTH              (156)
 #define  PANEL_HEIGHT             (160)
 #define  MAX_PANEL_NUM            (147)
-#define  INIT_PANEL_CAPACITY      (12)
+#define  INIT_PANEL_CAPACITY      (147)
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE CONSTANTS ---------------------------------------------------- */
@@ -64,9 +64,20 @@ static uint16_t battery_sort_value = 0;
 
 static bool nvs_store_complete_flag = true;
 static bool save_button_press_flag = false; // true: "save" button is pressed
-static uint8_t button_uplink_num = 0;
+static volatile uint8_t button_uplink_num = 0;
 
 static SemaphoreHandle_t Mutex;
+
+static bool activate_str_send_complete_flag = true;
+static bool activate_str_send_button_press_flag = false; // true: "send_join" button is pressed
+
+static bool fw_detect_str_send_complete_flag = true;
+static bool fw_detect_str_send_button_press_flag = false; // true: "send_fw_detect" button is pressed
+
+// static bool data_update_str_send_complete_flag = true;
+// static bool send_data_update_button_press_flag = false; // true: "send_data_update" button is pressed
+
+// static uint8_t current_la66_fw_type = ;
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE FUNCTIONS DECLARATION ---------------------------------------- */
@@ -76,7 +87,7 @@ static void repos_by_index(DynamicArray *arr);
 static void tem_unit_convert(uint8_t type, DynamicArray * arr);
 static void resizeArray(DynamicArray *arr, size_t newCapacity);
 static void addElement(DynamicArray *arr, uint16_t type, lv_obj_t * parent);
-static uint16_t find_physical_index(DynamicArray *arr, uint16_t index);
+static int16_t find_physical_index(DynamicArray *arr, uint16_t index);
 static uint16_t count_top_num(DynamicArray *arr);
 static long get_battery_text_value(panel_with_type * panel);
 
@@ -295,9 +306,9 @@ static void addElement(DynamicArray *arr, uint16_t type, lv_obj_t *parent)
 }
 
 // Find the physical index value of the array corresponding to the current index element
-static uint16_t find_physical_index(DynamicArray *arr, uint16_t index) 
+static int16_t find_physical_index(DynamicArray *arr, uint16_t index) 
 {
-    uint16_t array_pyhsical_index = -1;
+    int16_t array_pyhsical_index = -1;
     for(uint16_t i = 0; i < arr->size; i++) 
     {
         if(arr->array[i].panel_obj_index == index) 
@@ -421,7 +432,7 @@ time_t get_sec(void)
 	return now_sec;
 }
 
-void config_save(int32_t brightness, uint16_t tem_unit, uint16_t boot_screen) 
+void config_save(int32_t brightness, uint16_t tem_unit, uint16_t boot_screen, uint16_t la66_cfg_font_index, uint16_t fport_display) 
 {
     esp_err_t err = nvs_flash_init();
     if(err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) 
@@ -441,27 +452,32 @@ void config_save(int32_t brightness, uint16_t tem_unit, uint16_t boot_screen)
     } 
     else 
     {
-        printf("Done\r\n");
+        printf("NVS open without error\r\n");
 	}
 
-	int32_t brightness_write = brightness;
-    printf("brightness is %ld\r\n", brightness_write);
-	err = nvs_set_i32(my_handle, "brightness", brightness_write);
-	printf((err != ESP_OK) ? "Failed!\r\n" : "Done\r\n");
+    printf("set brightness value to %ld\r\n", brightness);
+	err = nvs_set_i32(my_handle, "brightness", brightness);
+	printf((err != ESP_OK) ? "setting brightness failed!\r\n" : "setting brightness done\r\n");
 
-    uint16_t tem_unit_write = tem_unit;
-    printf("tem_unit is %d\r\n", tem_unit_write);
-	err = nvs_set_u16(my_handle, "tem_unit", tem_unit_write);
-	printf((err != ESP_OK) ? "Failed!\r\n" : "Done\r\n");
+    printf("set tem_unit value to %d\r\n", tem_unit);
+	err = nvs_set_u16(my_handle, "tem_unit", tem_unit);
+	printf((err != ESP_OK) ? "setting tem_unit failed!\r\n" : "setting tem_unit done\r\n");
 
-    uint16_t boot_screen_write = boot_screen;
-    printf("switch boot screen is %d\r\n", boot_screen_write);
-	err = nvs_set_u16(my_handle, "boot_screen", boot_screen_write);
-	printf((err != ESP_OK) ? "Failed!\r\n" : "Done\r\n");
+    printf("set boot screen value to %d\r\n", boot_screen);
+	err = nvs_set_u16(my_handle, "boot_screen", boot_screen);
+	printf((err != ESP_OK) ? "setting boot_screen failed!\r\n" : "setting boot_screen done\r\n");
+
+    // printf("set la66 cfg font index value to %d\r\n", la66_cfg_font_index);
+	// err = nvs_set_u16(my_handle, "la66_cfg_font_index", la66_cfg_font_index);
+	// printf((err != ESP_OK) ? "setting la66_cfg_font_index failed!\r\n" : "setting la66_cfg_font_index done\r\n");
+
+    printf("set boot screen value to %d\r\n", fport_display);
+	err = nvs_set_u16(my_handle, "fport_display", fport_display);
+	printf((err != ESP_OK) ? "setting fport_display failed!\r\n" : "setting fport_display done\r\n");
 
 	printf("Committing updates in NVS ... ");
 	err = nvs_commit(my_handle);
-	printf((err != ESP_OK) ? "Failed!\r\n" : "Done\r\n");
+	printf((err != ESP_OK) ? "Commit failed!\r\n" : "Commit Done\r\n");
 
     nvs_close(my_handle);
 
@@ -498,7 +514,9 @@ void deleteElement(DynamicArray *arr, size_t index)
         return;  
     }
 
-    uint16_t array_pyhsical_index = find_physical_index(arr, index);
+    int16_t arr_index_temp = find_physical_index(arr, index);
+    if(arr_index_temp == -1) return;
+    uint16_t array_pyhsical_index = (uint16_t)arr_index_temp;
     printf("array size: %d  delete physical index: %d  delete logical index: %d\r\n", size_temp, array_pyhsical_index, index);
     
     switch(arr->array[array_pyhsical_index].panel_obj.panel_type) 
@@ -544,7 +562,7 @@ void deleteElement(DynamicArray *arr, size_t index)
             {
                 if(arr->array[j].panel_obj_index == index + temp) 
                 {
-                    uint16_t physical_index = find_physical_index(arr, arr->array[j].panel_obj_index + 1);  //  Find the physical index corresponding to the next logical index
+                    uint16_t physical_index = (uint16_t)find_physical_index(arr, arr->array[j].panel_obj_index + 1);  //  Find the physical index corresponding to the next logical index
                     
                     arr->array[j] = arr->array[physical_index];
                     arr->array[j].panel_obj_index -= 1;
@@ -559,7 +577,7 @@ void deleteElement(DynamicArray *arr, size_t index)
         }
     }
 
-    uint16_t in = find_physical_index(arr,size_temp - 1);
+    uint16_t in = (uint16_t)find_physical_index(arr,size_temp - 1);
     for(uint16_t i = in;i < size_temp - 1;i++) 
     {
         arr->array[i] = arr->array[i + 1];
@@ -629,7 +647,7 @@ void reposArray1(DynamicArray *arr, lv_obj_t * PanelSensor)
     printf("********************************************\r\n");
     printf("start to pin an element to top\r\n");
 
-    uint16_t happen_index = -1;
+    int16_t happen_index = -1;
     panel_all * happen_obj = find_upper_by_SensorPanel(arr, PanelSensor);
     happen_index = happen_obj->panel_obj_index;
     printf("logical index: %d pin to top\r\n", happen_index);
@@ -667,7 +685,7 @@ void reposArray2(DynamicArray *arr, lv_obj_t * PanelSensor)
     printf("********************************************\r\n");
     printf("start to unpin an element from top\r\n");
 
-    uint16_t happen_index = -1;
+    int16_t happen_index = -1;
     panel_all * happen_obj = find_upper_by_SensorPanel(arr, PanelSensor);
     happen_index = happen_obj->panel_obj_index;
 
@@ -1003,6 +1021,73 @@ void timer_callback(lv_timer_t * timer)
 
     tem_unit_convert(1, &arr);
     tem_unit_convert(2, &arr);
+
+    if(arr_temp->size > 0) {
+        uint16_t selected_index = lv_dropdown_get_selected(ui_DropdownFportDisplaySwitch);
+
+        if(selected_index == 0) {
+            for(uint16_t i = 0;i < arr_temp->size;i++) {
+                switch(arr_temp->array[i].panel_obj.panel_type) 
+                {
+                    case TEM_HUM_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.tem_hum.ui_LabelFportTemHum, LV_OBJ_FLAG_HIDDEN) == true)
+                            lv_obj_clear_flag(arr_temp->array[i].panel_obj.panel_union.tem_hum.ui_LabelFportTemHum, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                    case DOOR_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.door.ui_LabelFportDoor, LV_OBJ_FLAG_HIDDEN) == true)
+                            lv_obj_clear_flag(arr_temp->array[i].panel_obj.panel_union.door.ui_LabelFportDoor, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                    case WATER_LEAK_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.water_leak.ui_LabelFportWaterLeak, LV_OBJ_FLAG_HIDDEN) == true)
+                            lv_obj_clear_flag(arr_temp->array[i].panel_obj.panel_union.water_leak.ui_LabelFportWaterLeak, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                    case OCCUPIED_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.occupied.ui_LabelFportOccupied, LV_OBJ_FLAG_HIDDEN) == true)
+                            lv_obj_clear_flag(arr_temp->array[i].panel_obj.panel_union.occupied.ui_LabelFportOccupied, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                    case BUTTON_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.button.ui_LabelFportButton, LV_OBJ_FLAG_HIDDEN) == true)
+                            lv_obj_clear_flag(arr_temp->array[i].panel_obj.panel_union.button.ui_LabelFportButton, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                    case ALARM_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.alarm.ui_LabelFportAlarm, LV_OBJ_FLAG_HIDDEN) == true)
+                            lv_obj_clear_flag(arr_temp->array[i].panel_obj.panel_union.alarm.ui_LabelFportAlarm, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                }
+            }
+        }
+        else if(selected_index == 1) {
+            for(uint16_t i = 0;i < arr_temp->size;i++) {
+                switch(arr_temp->array[i].panel_obj.panel_type) 
+                {
+                    case TEM_HUM_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.tem_hum.ui_LabelFportTemHum, LV_OBJ_FLAG_HIDDEN) == false)
+                            lv_obj_add_flag(arr_temp->array[i].panel_obj.panel_union.tem_hum.ui_LabelFportTemHum, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                    case DOOR_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.door.ui_LabelFportDoor, LV_OBJ_FLAG_HIDDEN) == false)
+                            lv_obj_add_flag(arr_temp->array[i].panel_obj.panel_union.door.ui_LabelFportDoor, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                    case WATER_LEAK_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.water_leak.ui_LabelFportWaterLeak, LV_OBJ_FLAG_HIDDEN) == false)
+                            lv_obj_add_flag(arr_temp->array[i].panel_obj.panel_union.water_leak.ui_LabelFportWaterLeak, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                    case OCCUPIED_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.occupied.ui_LabelFportOccupied, LV_OBJ_FLAG_HIDDEN) == false)
+                            lv_obj_add_flag(arr_temp->array[i].panel_obj.panel_union.occupied.ui_LabelFportOccupied, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                    case BUTTON_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.button.ui_LabelFportButton, LV_OBJ_FLAG_HIDDEN) == false)
+                            lv_obj_add_flag(arr_temp->array[i].panel_obj.panel_union.button.ui_LabelFportButton, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                    case ALARM_TYPE:
+                        if(lv_obj_has_flag(arr_temp->array[i].panel_obj.panel_union.alarm.ui_LabelFportAlarm, LV_OBJ_FLAG_HIDDEN) == false)
+                            lv_obj_add_flag(arr_temp->array[i].panel_obj.panel_union.alarm.ui_LabelFportAlarm, LV_OBJ_FLAG_HIDDEN);
+                        break;
+                }
+            }
+        }
+    }
 }
 
 void timer_alarm_callback(lv_timer_t * timer) 
@@ -1041,68 +1126,119 @@ void timer_alarm_callback(lv_timer_t * timer)
     }
 
     lv_label_set_text_fmt(ui_LabelPanelNumberValue, "%d", arr_temp->size);
+
+    if(arr_temp->size > 0) {
+        if(lv_obj_has_flag(ui_LabelNoPanelDataReceived, LV_OBJ_FLAG_HIDDEN) == false) {
+            lv_obj_add_flag(ui_LabelNoPanelDataReceived, LV_OBJ_FLAG_HIDDEN);
+        }
+    }
+    else if(arr_temp->size == 0) {
+        if(lv_obj_has_flag(ui_LabelNoPanelDataReceived, LV_OBJ_FLAG_HIDDEN) == true) {
+            lv_obj_clear_flag(ui_LabelNoPanelDataReceived, LV_OBJ_FLAG_HIDDEN);
+        }
+    }
+
+    // if(lv_dropdown_get_selected(ui_DropdownCurrentFwLoRaParams) == 1) {
+    //     current_la66_fw_type = ;
+    // }
 }
 
-void time_sort_value_set(uint16_t new_value)
-{
+void time_sort_value_set(uint16_t new_value) {
     time_sort_value = new_value;
 }
-uint16_t time_sort_value_get(void)
-{
+uint16_t time_sort_value_get(void) {
     return time_sort_value;
 }
-void battery_sort_value_set(uint16_t new_value)
-{
+
+void battery_sort_value_set(uint16_t new_value) {
     battery_sort_value = new_value;
 }
-uint16_t battery_sort_value_get(void)
-{
+uint16_t battery_sort_value_get(void) {
     return battery_sort_value;
 }
-void nvs_store_complete_flag_set(bool new_value)
-{
+
+void nvs_store_complete_flag_set(bool new_value) {
     nvs_store_complete_flag = new_value;
 }
-bool nvs_store_complete_flag_get(void)
-{
+bool nvs_store_complete_flag_get(void) {
     return nvs_store_complete_flag;
 }
-void save_button_press_flag_set(bool new_value)
-{
+
+
+
+void save_button_press_flag_set(bool new_value) {
     save_button_press_flag = new_value;
 }
-bool save_button_press_flag_get(void)
-{
+bool save_button_press_flag_get(void) {
     return save_button_press_flag;
 }
-uint8_t button_uplink_num_get(void)
-{
+
+uint8_t button_uplink_num_get(void) {
     return button_uplink_num;
 }
-void button_uplink_num_set(uint8_t button_uplink_num_temp)
-{
+void button_uplink_num_set(uint8_t button_uplink_num_temp) {
     button_uplink_num = button_uplink_num_temp;
 }
-DynamicArray * arr_get(void)
-{
+
+DynamicArray * arr_get(void) {
     return &arr;
 }
-void system_begin_sec_set(time_t new_value)
-{
+
+void system_begin_sec_set(time_t new_value) {
     system_begin_sec = new_value;
 }
-time_t system_begin_sec_get(void)
-{
+time_t system_begin_sec_get(void) {
     return system_begin_sec;
 }
-void lvgl_lock_get(void)
-{
+
+void lvgl_lock_get(void) {
     xSemaphoreTake(Mutex, portMAX_DELAY);
 }
-void lvgl_lock_release(void)
-{
+void lvgl_lock_release(void) {
     xSemaphoreGive(Mutex);
 }
+
+void activate_str_send_complete_flag_set(bool new_value) {
+    activate_str_send_complete_flag = new_value;
+}
+bool activate_str_send_complete_flag_get(void) {
+    return activate_str_send_complete_flag;
+}
+
+void activate_str_send_button_press_flag_set(bool new_value) {
+    activate_str_send_button_press_flag = new_value;
+}
+bool activate_str_send_button_press_flag_get(void) {
+    return activate_str_send_button_press_flag;
+}
+
+void fw_detect_str_send_complete_flag_set(bool new_value) {
+    fw_detect_str_send_complete_flag = new_value;
+}
+bool fw_detect_str_send_complete_flag_get(void) {
+    return fw_detect_str_send_complete_flag;
+}
+
+void fw_detect_str_send_button_press_flag_set(bool new_value) {
+    fw_detect_str_send_button_press_flag = new_value;
+}
+bool fw_detect_str_send_button_press_flag_get(void) {
+    return fw_detect_str_send_button_press_flag;
+}
+
+// void data_update_str_send_complete_flag_set(bool new_value) {
+//     data_update_str_send_complete_flag = new_value;
+// }
+// bool data_update_str_send_complete_flag_get(void) {
+//     return data_update_str_send_complete_flag;
+// }
+
+// void send_data_update_button_press_flag_set(bool new_value) {
+//     send_data_update_button_press_flag = new_value;
+// }
+// bool send_data_update_button_press_flag_get(void) {
+//     return send_data_update_button_press_flag;
+// }
 
 
 // By DEV Name, DEV EUI, Panel type, the three uniquely determine whether a message will be updated to an existing panel
@@ -1115,13 +1251,13 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
     printf("\r\n");
     for(int i = 0;i < strlen(dest1);i++) 
     {
-        ESP_LOGI(TAG_SORT, "dest1: %02X", dest1[i]);
+        ESP_LOGD(TAG_SORT, "dest1: %02X", dest1[i]);
     }
 
     sprintf(dest2 + 0, "%02X", *(dest1 + 0));
     sprintf(dest2 + 2, "%02X", *(dest1 + 1));
     sprintf(dest2 + 4, "%02X", *(dest1 + 2));
-    ESP_LOGI(TAG_SORT, "dest2: %s", dest2);
+    ESP_LOGD(TAG_SORT, "dest2: %s", dest2);
 
     printf("\r\n");
     
@@ -1153,6 +1289,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.tem_hum.ui_SliderBatteryTemHum, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
                     lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelSignalStrengthValueTemHum, "Rssi: %d", mes->data_rssi); // set signal strength label
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.tem_hum.ui_SliderSignalStrengthTemHum, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.tem_hum.ui_LabelFportTemHum, "Fport\n%u", mes->fport); // set fport   (unsigned int)(*(mes->fport))
                     arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
@@ -1190,6 +1327,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.door.ui_SliderBatteryDoor, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
                     lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.door.ui_LabelSignalStrengthValueDoor, "Rssi: %d", mes->data_rssi); // set signal strength label
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.door.ui_SliderSignalStrengthDoor, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.door.ui_LabelFportDoor, "Fport\n%u", mes->fport); // set fport   (unsigned int)(*(mes->fport))
                     arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
@@ -1228,6 +1366,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.water_leak.ui_SliderBatteryWaterLeak, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
                     lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.water_leak.ui_LabelSignalStrengthValueWaterLeak, "Rssi: %d", mes->data_rssi); // set signal strength label
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.water_leak.ui_SliderSignalStrengthWaterLeak, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.water_leak.ui_LabelFportWaterLeak, "Fport\n%u", mes->fport); // set fport   (unsigned int)(*(mes->fport))
                     arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
@@ -1280,6 +1419,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.occupied.ui_SliderBatteryOccupied, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
                     lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.occupied.ui_LabelSignalStrengthValueOccupied, "Rssi: %d", mes->data_rssi); // set signal strength label
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.occupied.ui_SliderSignalStrengthOccupied, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.occupied.ui_LabelFportOccupied, "Fport\n%u", mes->fport); // set fport   (unsigned int)(*(mes->fport))
                     arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
@@ -1324,6 +1464,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.button.ui_SliderBatteryButton, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
                     lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.button.ui_LabelSignalStrengthValueButton, "Rssi: %d", mes->data_rssi); // set signal strength label
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.button.ui_SliderSignalStrengthButton, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.button.ui_LabelFportButton, "Fport\n%u", mes->fport); // set fport   (unsigned int)(*(mes->fport))
                     arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
@@ -1334,18 +1475,19 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
                 if(strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.alarm.ui_LabelNameAlarm), (char *)(mes->dev_name)) == 0 && strcmp(lv_label_get_text(arr->array[i].panel_obj.panel_union.alarm.ui_LabelDevEUIAlarm), dest2) == 0) 
                 {
                     // set alarm_status
-                    if(*(mes->status) == ALARM_STATUS_ALARM) 
+                    if(*(mes->status) == ALARM_STATUS_ON) 
                     {
-                        arr->array[arr->size - 1].panel_obj.panel_union.alarm.timer_alarm_en_flag = ALARM_TIMER_ENABLE;
+                        arr->array[i].panel_obj.panel_union.alarm.timer_alarm_en_flag = ALARM_TIMER_ENABLE;
                     }
                     else if(*(mes->status) == ALARM_STATUS_OFF) 
                     {
-                        arr->array[arr->size - 1].panel_obj.panel_union.alarm.timer_alarm_en_flag = ALARM_TIMER_DISABLE;
+                        arr->array[i].panel_obj.panel_union.alarm.timer_alarm_en_flag = ALARM_TIMER_DISABLE;
                     }
                     lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.alarm.ui_LabelBatteryAlarm, "%dmV", *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256); // set bat label
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.alarm.ui_SliderBatteryAlarm, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
                     lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.alarm.ui_LabelSignalStrengthValueAlarm, "Rssi: %d", mes->data_rssi); // set signal strength label
                     lv_slider_set_value(arr->array[i].panel_obj.panel_union.alarm.ui_SliderSignalStrengthAlarm, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+                    lv_label_set_text_fmt(arr->array[i].panel_obj.panel_union.alarm.ui_LabelFportAlarm, "Fport\n%u", mes->fport); // set fport   (unsigned int)(*(mes->fport))
                     arr->array[i].sec_arrive = get_sec(); // record arrive time
                     NewPanelArrive_Animation(ui_ContainerRefreshMessageNotice, 1000);
                     return;
@@ -1379,6 +1521,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_SliderBatteryTemHum, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
             lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelSignalStrengthValueTemHum, "Rssi: %d", mes->data_rssi); // set signal strength label
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_SliderSignalStrengthTemHum, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.tem_hum.ui_LabelFportTemHum, "Fport\n%u", mes->fport); // set fport  (unsigned int)(*(uint8_t *)(mes->fport))
             arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
             NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);
             
@@ -1415,6 +1558,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_SliderBatteryDoor, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
             lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_LabelSignalStrengthValueDoor, "Rssi: %d", mes->data_rssi);
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_SliderSignalStrengthDoor, mes->data_rssi, LV_ANIM_OFF);
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.door.ui_LabelFportDoor, "Fport\n%u", mes->fport); // set fport  (unsigned int)(*(uint8_t *)(mes->fport))
             arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
             NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);
             break;
@@ -1450,6 +1594,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_SliderBatteryWaterLeak, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
             lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_LabelSignalStrengthValueWaterLeak, "Rssi: %d", mes->data_rssi); // set signal strength label
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_SliderSignalStrengthWaterLeak, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.water_leak.ui_LabelFportWaterLeak, "Fport\n%u", mes->fport); // set fport  (unsigned int)(*(mes->fport))
             arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
             NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);
 
@@ -1502,6 +1647,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_SliderBatteryOccupied, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
             lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_LabelSignalStrengthValueOccupied, "Rssi: %d", mes->data_rssi); // set signal strength label
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_SliderSignalStrengthOccupied, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.occupied.ui_LabelFportOccupied, "Fport\n%u", mes->fport); // set fport   (unsigned int)(*(mes->fport))
             arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
             NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);
 
@@ -1546,6 +1692,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_SliderBatteryButton, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
             lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_LabelSignalStrengthValueButton, "Rssi: %d", mes->data_rssi); // set signal strength label
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_SliderSignalStrengthButton, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.button.ui_LabelFportButton, "Fport\n%u", mes->fport); // set fport  (unsigned int)(*(mes->fport))
             arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
             NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000);
 
@@ -1555,7 +1702,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_LabelDevEUIAlarm,"%s", dest2); // set dev_eui
             
             // set alarm_status
-            if(*(mes->status) == ALARM_STATUS_ALARM) 
+            if(*(mes->status) == ALARM_STATUS_ON) 
             {
                 arr->array[arr->size - 1].panel_obj.panel_union.alarm.timer_alarm_en_flag = ALARM_TIMER_ENABLE;
             }
@@ -1567,6 +1714,7 @@ void panel_update(message * mes, DynamicArray * arr, lv_obj_t * parent)
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_SliderBatteryAlarm, *(mes->bat) + (*((mes->bat) + 1) & 0x3F)*256, LV_ANIM_OFF); // set bat slider
             lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_LabelSignalStrengthValueAlarm, "Rssi: %d", mes->data_rssi); // set signal strength label
             lv_slider_set_value(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_SliderSignalStrengthAlarm, mes->data_rssi, LV_ANIM_OFF); // set signal strength slider
+            lv_label_set_text_fmt(arr->array[arr->size - 1].panel_obj.panel_union.alarm.ui_LabelFportAlarm, "Fport\n%u", mes->fport); // set fport  (unsigned int)(*(mes->fport))
             arr->array[arr->size - 1].sec_arrive = get_sec(); // record arrive time
             
             NewPanelArrive_Animation(ui_ContainerNewMessageNotice, 1000); 
@@ -1591,5 +1739,5 @@ void sort_init(void)
 	// 	lvgl_lock_release();
 	// }
 
-    printf("sort_init ok\r\n");
+    ESP_LOGI(TAG_SORT, "sort init finished\r\n");
 }
