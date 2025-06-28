@@ -1246,7 +1246,7 @@ void RadioIrqProcess(void)
                 {							
                     LOG_PRINTF(LL_DEBUG,"Rssi= %d\r\n",RadioPktStatus.Params.LoRa.RssiPkt+RadioPktStatus.Params.LoRa.SnrPkt);
                     char str_temp4[48] = {'\0'};
-                    snprintf(str_temp4, 48, "Rssi= %d\r\n", RadioPktStatus.Params.LoRa.RssiPkt+RadioPktStatus.Params.LoRa.SnrPkt);
+                    snprintf(str_temp4, sizeof(str_temp4), "Rssi= %d\r\n", RadioPktStatus.Params.LoRa.RssiPkt+RadioPktStatus.Params.LoRa.SnrPkt);
                     for(uint8_t i = 0;i < strlen(str_temp4);i++) {
                         uart_send_data(UART2, *(str_temp4 + i));
                     }

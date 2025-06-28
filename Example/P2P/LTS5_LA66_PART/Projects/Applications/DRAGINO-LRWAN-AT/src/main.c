@@ -23,6 +23,8 @@
 #include "sx126x.h"
 #include "tremo_flash.h"
 
+#include "version.h"
+
 typedef struct
 {
 	/*point to the LoRa App data buffer*/
@@ -175,14 +177,18 @@ void uart_to_esp32_init(uint32_t baudrate) {
 
 	uart_init(UART2, &uart_config);
 
-	// uart_config_interrupt(UART2, UART_INTERRUPT_RX_DONE, true); 
-	// NVIC_SetPriority(UART2_IRQn, 2);
-	// NVIC_EnableIRQ(UART2_IRQn);
+	uart_config_interrupt(UART2, UART_INTERRUPT_RX_DONE, true); 
+	NVIC_SetPriority(UART2_IRQn, 2);
+	NVIC_EnableIRQ(UART2_IRQn);
 
 	uart_cmd(UART2, ENABLE);
 }
 
 // uint8_t esp_pc5_flag = 0;
+
+uint8_t uart_rx_data_from_esp32[32] = {0};
+uint8_t uart_esp32_rx_data_len_index = 0;
+uint8_t uart_all_data_rx_done_flag = 0;
 
 void board_init()
 {
@@ -381,13 +387,52 @@ int main(void)
 
 		if (print_isdone())
 		{
-			EnterLowPowerStopModeStatus = 1;
-			TimerLowPowerHandler();
+			// EnterLowPowerStopModeStatus = 1;
+			// TimerLowPowerHandler();
+			EnterLowPowerStopModeStatus = 0;
 		}
 		else
 			EnterLowPowerStopModeStatus = 0;
 
 		Radio.IrqProcess();
+
+		/*uart2 receive handler*/
+		if(uart_all_data_rx_done_flag == 1) {
+			/*print received uart data from esp32s3*/
+			LOG_PRINTF(LL_DEBUG, "Uart2 buf final received data(Hex):  ");
+			for(uint8_t i = 0;i < sizeof(uart_rx_data_from_esp32);i++) {
+				LOG_PRINTF(LL_DEBUG, "%02X ", uart_rx_data_from_esp32[i]);
+			}
+			LOG_PRINTF(LL_DEBUG, "\nUart2 buf final received data(String):  %s\n", (char *)uart_rx_data_from_esp32);
+			/*compare it with preset instruct in la66*/
+			if(strncmp((char *)uart_rx_data_from_esp32, "fw type get", sizeof(uart_rx_data_from_esp32)) == 0) {
+				char buf[32] = {'\0'};
+
+				snprintf(buf, sizeof(buf), "P2P%s", LA66_OF_LTS5_VERSION_STRING);
+				for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+					uart_send_data(UART2, (uint8_t)buf[i]);
+				}
+			}
+			else if(strncmp((char *)uart_rx_data_from_esp32, "cfg get", sizeof(uart_rx_data_from_esp32)) == 0) {
+				char buf[1024] = {'\0'};
+
+				snprintf(buf, sizeof(buf), "la66 cfg");
+				
+				write_buff_at_cfg(buf, sizeof(buf));
+				LOG_PRINTF(LL_DEBUG, "\r\nCFG_BUF_LEN %d\r\n", strlen(buf));
+				LOG_PRINTF(LL_DEBUG, "CFG_BUF %s\r\n", buf);
+				for(uint16_t i = 0;i < strlen(buf) + 1;i++) {
+					uart_send_data(UART2, (uint8_t)buf[i]);
+				}
+			}
+			
+			/*reset uart receive args*/
+			memset(uart_rx_data_from_esp32, 0, sizeof(uart_rx_data_from_esp32));
+			uart_esp32_rx_data_len_index = 0;
+			uart_all_data_rx_done_flag = 0;
+
+			LOG_PRINTF(LL_DEBUG, "the received serial data has been processed by la66\r\n");
+		}
 	}
 }
 
@@ -645,7 +690,7 @@ static void test_OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t 
 			{
 				LOG_PRINTF(LL_DEBUG, "%02x ", payload[i]);
 				char str_temp6[10] = {'\0'};
-				snprintf(str_temp6, 10, "%02x ", payload[i]);
+				snprintf(str_temp6, sizeof(str_temp6), "%02x ", payload[i]);
 				for(uint8_t i = 0;i < strlen(str_temp6);i++) {
 					uart_send_data(UART2, *(str_temp6 + i));
 				}

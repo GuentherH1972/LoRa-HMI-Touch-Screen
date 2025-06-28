@@ -69,7 +69,7 @@ Maintainer: Miguel Luis, Gregory Cristian and Wael Guibene
 /* Includes ------------------------------------------------------------------*/
 
 #define AT_VERSION_STRING	"v1.2.4"
-#define LA66_OF_LTS5_VERSION_STRING	"v1.0.0"
+#define LA66_OF_LTS5_VERSION_STRING	"v1.1.0"
 	 
 /* Exported types ------------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/

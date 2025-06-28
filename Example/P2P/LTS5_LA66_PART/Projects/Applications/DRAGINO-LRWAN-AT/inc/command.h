@@ -50,4 +50,5 @@ void linkwan_at_process(void);
 void linkwan_serial_input(uint8_t cmd);
 int linkwan_serial_output(uint8_t *buffer, int len);
 void linkwan_at_prompt_print();
+void write_buff_at_cfg(char *buf, int len);
 #endif

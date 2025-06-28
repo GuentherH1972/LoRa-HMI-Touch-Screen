@@ -338,6 +338,32 @@ static int at_cfg_func(int opt, int argc, char *argv[])
 	return ret;
 }
 
+void write_buff_at_cfg(char *buf, int len)
+{
+	char str_temp[128] = {'\0'};
+	for (uint8_t num = 0; num < AT_TABLE_SIZE; num++)
+	{
+		memset(atcmd, 0x00, ATCMD_SIZE);
+		if (g_at_table[num].fn(QUERY_CMD, 0, 0) == LWAN_SUCCESS)
+		{
+			memset(str_temp, '\0', sizeof(str_temp));
+			snprintf(str_temp, sizeof(str_temp), "AT%s=", g_at_table[num].cmd);
+			strncat(buf, str_temp, strlen(str_temp));
+
+			if(len - (int)strlen((const char *)atcmd) < 0) {
+				break;
+			}
+
+			strncat(buf, (char *)atcmd, strlen((const char *)atcmd));
+			len -= (int)strlen((const char *)atcmd);
+			
+			delay_ms(10);
+		}
+		atcmd_index = 0;
+		memset(atcmd, 0xff, ATCMD_SIZE);
+	}
+}
+
 static int at_fcu_func(int opt, int argc, char *argv[])
 {
 	int ret = LWAN_PARAM_ERROR;

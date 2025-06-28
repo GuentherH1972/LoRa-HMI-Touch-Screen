@@ -2,7 +2,15 @@
 #include "tremo_it.h"
 #include "tremo_gpio.h"
 
+#include <stdio.h>
+#include "tremo_uart.h"
+#include "log.h"
+
 // extern uint8_t esp_pc5_flag;
+
+extern uint8_t uart_rx_data_from_esp32[32];
+extern uint8_t uart_esp32_rx_data_len_index;
+extern uint8_t uart_all_data_rx_done_flag;
 
 extern void RadioOnDioIrq(void);
 extern void RtcOnIrq(void);
@@ -133,6 +141,39 @@ void LPUART_IRQHandler(void)
         linkwan_serial_input(rx_data_temp);
     }
 }
+
+void esp32_rx_handle_func(uint8_t rx_data) {
+    if(rx_data == 0x00) {
+        if(uart_esp32_rx_data_len_index == 0) {
+            LOG_PRINTF(LL_DEBUG, "Uart2 receive abnormal data: (%d)\r\n", rx_data);
+            return;
+        }
+    }
+    if(uart_all_data_rx_done_flag == 1) {
+        return;
+    }
+	if( (rx_data == '\n') && (uart_rx_data_from_esp32[uart_esp32_rx_data_len_index - 1] == '\r') && (uart_esp32_rx_data_len_index >= 1)) {
+        uart_rx_data_from_esp32[uart_esp32_rx_data_len_index - 1] = '\0';
+	    uart_esp32_rx_data_len_index += 1;
+
+		uart_all_data_rx_done_flag = 1;
+		return;
+	}
+	uart_rx_data_from_esp32[uart_esp32_rx_data_len_index] = rx_data;
+	uart_esp32_rx_data_len_index += 1;
+}
+
+void UART2_IRQHandler(void) {
+    if(uart_get_interrupt_status(UART2, UART_INTERRUPT_RX_DONE) == SET)
+    {
+        
+        uint8_t rx_data_temp = uart_receive_data(UART2);
+        LOG_PRINTF(LL_DEBUG, "Uart2 receive (%02X)\r\n", rx_data_temp);
+        esp32_rx_handle_func(rx_data_temp);
+        uart_clear_interrupt(UART2, UART_INTERRUPT_RX_DONE);
+    }
+}
+
 /**
  * @brief  This function handles dma0 Handler.
  * @param  None
