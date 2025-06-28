@@ -147,7 +147,7 @@ void LPUART_IRQHandler(void)
 
 void esp32_rx_handle_func(uint8_t rx_data) {
     if(rx_data == 0x00) {
-        if(((uart_esp32_rx_data_len_index >= 1) && (uart_rx_data_from_esp32[uart_esp32_rx_data_len_index - 1] != 0x05)) || (uart_esp32_rx_data_len_index == 0)) {
+        if(uart_esp32_rx_data_len_index == 0) {
             LOG_PRINTF(LL_DEBUG, "Uart2 receive abnormal data: (%d)\r\n", rx_data);
             return;
         }

@@ -2844,6 +2844,43 @@ static int at_cfg_func(int opt, int argc, char *argv[])
 	return ret;
 }
 
+void write_buff_at_cfg(char *buf, int len)
+{
+	atrecve_flag = 1;
+	char str_temp[128] = {'\0'};
+	for (uint16_t num = 0; num < AT_TABLE_SIZE; num++)
+	{
+		memset(atcmd, 0x00, ATCMD_SIZE);
+		if (g_at_table[num].fn(QUERY_CMD, 0, 0) == LWAN_SUCCESS)
+		{
+			// LOG_PRINTF(LL_DEBUG, "AT%s=", g_at_table[num].cmd);
+			memset(str_temp, '\0', sizeof(str_temp));
+			snprintf(str_temp, sizeof(str_temp), "AT%s=", g_at_table[num].cmd);
+			strncat(buf, str_temp, strlen(str_temp));
+			// for(uint8_t i = 0;i < strlen(str_temp) + 1;i++) {
+			// 	uart_send_data(UART2, (uint8_t)str_temp[i]);
+			// }
+			if (strcmp(g_at_table[num].cmd, AT_RECVB) == 0)
+			{
+				atrecve_flag = 0;
+				g_at_table[num].fn(QUERY_CMD, 0, 0);
+				atrecve_flag = 1;
+			}
+			if(len - (int)strlen((const char *)atcmd) < 0) {
+				break;
+			}
+			strncat(buf, (char *)atcmd, strlen((const char *)atcmd));
+			// for(uint8_t i = 0;i < strlen((char *)atcmd) + 1;i++) {
+			// 	uart_send_data(UART2, (uint8_t)atcmd[i]);
+			// }
+			len -= (int)strlen((const char *)atcmd);
+		}
+		atcmd_index = 0;
+	}
+	memset(atcmd, 0xff, ATCMD_SIZE);
+	atrecve_flag = 0;
+}
+
 #if defined(REGION_AU915) || defined(REGION_AS923)
 static int at_dwellt_func(int opt, int argc, char *argv[])
 {

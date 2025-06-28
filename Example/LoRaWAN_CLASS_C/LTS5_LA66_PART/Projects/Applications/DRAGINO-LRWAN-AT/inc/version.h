@@ -71,7 +71,7 @@ Maintainer: Miguel Luis, Gregory Cristian and Wael Guibene
 #define AT_VERSION_STRING	"v1.3"
 #define AT_LoRaWan_VERSION_STRING	"DR-LWS-007" 
 	 
-#define LA66_OF_LTS5_VERSION_STRING	"v1.0.0"
+#define LA66_OF_LTS5_VERSION_STRING	"v1.1.0"
 	 
 /* Exported types ------------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/

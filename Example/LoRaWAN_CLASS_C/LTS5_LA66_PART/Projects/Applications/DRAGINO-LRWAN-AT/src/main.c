@@ -25,6 +25,8 @@
 #include "sx126x.h"
 #include "tremo_flash.h"
 
+#include "version.h"
+
 log_level_t g_log_level = LL_ERR | LL_WARN | LL_DEBUG;
 
 extern bool print_isdone(void);
@@ -119,7 +121,7 @@ bool payload_oversize;
 /*!
  * LoRaWAN default endNode class port
  */
-#define LORAWAN_DEFAULT_CLASS CLASS_A
+#define LORAWAN_DEFAULT_CLASS CLASS_C
 /*!
  * LoRaWAN default confirm state
  */
@@ -383,14 +385,15 @@ void *_sbrk(int nbytes)
 }
 
 
-char read_deui_cfg[] = "AT+DEUI=?";
+static const char read_deui_cfg[] = "AT+DEUI=?";
 
-#define MAX_NODE_NUM 147
-#define ENCRIPTION_LEN 1
-#define DEVICE_NAME_LEN 16  //32
-#define DEVICE_EUI_LEN 8
-#define DEVICE_DATA_LEN 9
-#define DEVICE_TOTAL_LEN (ENCRIPTION_LEN + DEVICE_NAME_LEN + DEVICE_EUI_LEN + DEVICE_DATA_LEN)
+#define MAX_NODE_NUM (147)
+#define ENCRIPTION_LEN (1)
+#define DEVICE_NAME_LEN (16)  //32
+#define DEVICE_EUI_LEN (8)
+#define DEVICE_DATA_LEN (9)
+#define FPORT_LEN (1)
+#define DEVICE_TOTAL_LEN (ENCRIPTION_LEN + DEVICE_NAME_LEN + DEVICE_EUI_LEN + DEVICE_DATA_LEN + FPORT_LEN)
 
 typedef struct {
 	uint8_t encription[ENCRIPTION_LEN];
@@ -399,6 +402,7 @@ typedef struct {
 	uint8_t device_data[DEVICE_DATA_LEN];
 	uint8_t symbol_cnt;  // 0x01: device_data  0x02: device_eui  0x04: device_name  0x08: encription
 	int8_t rssi_according_to_device_data;
+	uint8_t fport;
 } node_type;
 
 typedef struct {
@@ -407,24 +411,24 @@ typedef struct {
     uint8_t num;
 } nodeArray_type;
 
-nodeArray_type node_arr;
-uint8_t device_total[DEVICE_TOTAL_LEN] = {0};
-char compatible_p2p_format[4] = {0};
-char compatible_p2p_format_1[3] = {0};
-char compatible_p2p_format_2[3] = {0};
-char compatible_p2p_format_rssi[16] = {0};
+static nodeArray_type node_arr;
+static uint8_t device_total[DEVICE_TOTAL_LEN] = {0};
+static char compatible_p2p_format[4] = {0};
+static char compatible_p2p_format_1[3] = {0};
+static char compatible_p2p_format_2[3] = {0};
+static char compatible_p2p_format_rssi[16] = {0};
 
-uint8_t payload_upload_correct[2] = {0x02, 0x00};
-uint8_t payload_upload_error[2] = {0x04, 0x17};
-uint8_t payload_upload_device_not_register_error[2] = {0x04, 0x04};
-uint8_t payload_upload_button_checked[2] = {0x05, 0x00};
-uint8_t payload_upload_button_unchecked[2] = {0x05, 0x01};
+static uint8_t payload_upload_correct[2] = {0x02, 0x00};
+static uint8_t payload_upload_error[2] = {0x04, 0x17};
+static uint8_t payload_upload_device_not_register_error[2] = {0x04, 0x04};
+static uint8_t payload_upload_button_checked[2] = {0x05, 0x00};
+static uint8_t payload_upload_button_unchecked[2] = {0x05, 0x01};
 
-#define ACK_LEN 32
-uint8_t ack[32] = {0};
+// #define ACK_LEN (32)
+// uint8_t ack[ACK_LEN] = {0};
 
-uint8_t port_temp = 0;
-uint8_t port_temp_lock = 0;
+static uint8_t port_temp = 0;
+static uint8_t port_temp_lock = 0;
 
 extern uint8_t timer_flag;
 
@@ -786,14 +790,141 @@ int main(void)
 				for(uint8_t i = 0;i < MAX_NODE_NUM;i++) {
 					if(strncmp((char *)node_arr.arr[i].device_name, (char *)uart_rx_data_from_esp32, strlen((char *)uart_rx_data_from_esp32) - 2) == 0) {
 						if(uart_rx_data_from_esp32[strlen((char *)uart_rx_data_from_esp32) - 1] == 0x01) {
-							AT_data_send(0x01, i + 3, payload_upload_button_checked, 2);
+							char buf[128] = {'\0'};
+							uint8_t status = AT_data_send(0x01, i + 3, payload_upload_button_checked, 2);
+
+							if (status == 1) {
+								snprintf(buf, sizeof(buf), "An uplink about button state change has been sent");
+								for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+									uart_send_data(UART2, (uint8_t)buf[i]);
+								}
+							}
+							else if (status == 2) {
+								snprintf(buf, sizeof(buf), "LWAN Busy");
+								for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+									uart_send_data(UART2, (uint8_t)buf[i]);
+								}
+							}
+							else {
+								snprintf(buf, sizeof(buf), "Param Error");
+								for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+									uart_send_data(UART2, (uint8_t)buf[i]);
+								}
+							}
 						}
 						else if(uart_rx_data_from_esp32[strlen((char *)uart_rx_data_from_esp32) - 1] == 0x02) {
-							AT_data_send(0x01, i + 3, payload_upload_button_unchecked, 2);
+							char buf[128] = {'\0'};
+							uint8_t status = AT_data_send(0x01, i + 3, payload_upload_button_unchecked, 2);
+
+							if (status == 1) {
+								snprintf(buf, sizeof(buf), "An uplink about button state change has been sent");
+								for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+									uart_send_data(UART2, (uint8_t)buf[i]);
+								}
+							}
+							else if (status == 2) {
+								snprintf(buf, sizeof(buf), "LWAN Busy");
+								for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+									uart_send_data(UART2, (uint8_t)buf[i]);
+								}
+							}
+							else {
+								snprintf(buf, sizeof(buf), "Param Error");
+								for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+									uart_send_data(UART2, (uint8_t)buf[i]);
+								}
+							}
 						}
 					}
 				}
 			}
+			// else if(strncmp((char *)uart_rx_data_from_esp32, "get join status", sizeof(uart_rx_data_from_esp32)) == 0) {
+			// 	char buf[16] = {'\0'};
+			// 	if(LORA_JoinStatus() != LORA_SET) {
+			// 		snprintf(buf, sizeof(buf), "Not Joined");
+			// 	}
+			// 	else {
+			// 		snprintf(buf, sizeof(buf), "Joined");
+			// 	}
+				
+			// 	for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+			// 		uart_send_data(UART2, (uint8_t)buf[i]);
+			// 	}
+			// }
+			else if(strncmp((char *)uart_rx_data_from_esp32, "activate TTN", sizeof(uart_rx_data_from_esp32)) == 0) {
+				if (LORA_JoinStatus() != LORA_SET)
+		 		{	
+					// /*Not joined, try again later*/
+					// return LWAN_NO_NET_JOINED;
+					
+					for(uint8_t i = 0;i < 3;++i) {
+						LORA_Join();
+						DelayMs(3000);
+						if (LORA_JoinStatus() == LORA_SET) break;
+					}
+				}
+
+				char buf[128] = {'\0'};
+
+				if (LORA_JoinStatus() != LORA_SET) {
+					snprintf(buf, sizeof(buf), "Join failed 3 times");
+					for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+						uart_send_data(UART2, (uint8_t)buf[i]);
+					}
+				}
+				else {
+					uint8_t confirm_status = 1, fport = 2, len = 8;
+					uint8_t payload[242] = {0x05, 0x82, 0x08, 0x02, 0x58, 0x1e, 0xa0, 0xa5};
+					
+					uint8_t status = AT_data_send(confirm_status, fport, payload, len);
+
+					if (status == 1) {
+						// ret = LWAN_SUCCESS;
+
+						snprintf(buf, sizeof(buf), "An uplink for activation has been sent");
+						for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+							uart_send_data(UART2, (uint8_t)buf[i]);
+						}
+					}
+					else if (status == 2) {
+						// ret = LWAN_BUSY_ERROR;
+
+						snprintf(buf, sizeof(buf), "LWAN Busy");
+						for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+							uart_send_data(UART2, (uint8_t)buf[i]);
+						}
+					}
+					else {
+						// ret = LWAN_PARAM_ERROR;
+
+						snprintf(buf, sizeof(buf), "Param Error");
+						for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+							uart_send_data(UART2, (uint8_t)buf[i]);
+						}
+					}
+				}
+			}
+			else if(strncmp((char *)uart_rx_data_from_esp32, "fw type get", sizeof(uart_rx_data_from_esp32)) == 0) {
+				char buf[32] = {'\0'};
+
+				snprintf(buf, sizeof(buf), "CLASS C%s", LA66_OF_LTS5_VERSION_STRING);
+				for(uint8_t i = 0;i < strlen(buf) + 1;i++) {
+					uart_send_data(UART2, (uint8_t)buf[i]);
+				}
+			}
+			else if(strncmp((char *)uart_rx_data_from_esp32, "cfg get", sizeof(uart_rx_data_from_esp32)) == 0) {
+				char buf[1024] = {'\0'};
+
+				snprintf(buf, sizeof(buf), "la66 cfg");
+				
+				write_buff_at_cfg(buf, sizeof(buf));
+				LOG_PRINTF(LL_DEBUG, "\r\nCFG_BUF_LEN %d\r\n", strlen(buf));
+				LOG_PRINTF(LL_DEBUG, "CFG_BUF %s\r\n", buf);
+				for(uint16_t i = 0;i < strlen(buf) + 1;i++) {
+					uart_send_data(UART2, (uint8_t)buf[i]);
+				}
+			}
+			
 			/*reset uart receive args*/
 			memset(uart_rx_data_from_esp32, 0, sizeof(uart_rx_data_from_esp32));
 			uart_esp32_rx_data_len_index = 0;
@@ -837,7 +968,7 @@ static void LORA_RxData(lora_AppData_t *AppData)
 			for(uint8_t i = 0;i<loop_num;i++) {
 				node_arr.arr[AppData->Port - 3].device_eui[i] = *(AppData->Buff + 1 + i);
 			}
-			uint8_t rest_data_len = DEVICE_EUI_LEN - (AppData->BuffSize - 1);
+			int16_t rest_data_len = DEVICE_EUI_LEN - (AppData->BuffSize - 1);
 			if(rest_data_len > 0) {
 				for(uint8_t i = DEVICE_EUI_LEN - rest_data_len;i < DEVICE_EUI_LEN;i++) {
 					node_arr.arr[AppData->Port - 3].device_eui[i] = 0x00; 
@@ -851,7 +982,7 @@ static void LORA_RxData(lora_AppData_t *AppData)
 			for(uint8_t i = 0;i<loop_num;i++) {
 				node_arr.arr[AppData->Port - 3].device_name[i] = *(AppData->Buff + 1 + i);
 			}
-			uint8_t rest_data_len = DEVICE_NAME_LEN - (AppData->BuffSize - 1);
+			int16_t rest_data_len = DEVICE_NAME_LEN - (AppData->BuffSize - 1);
 			if(rest_data_len > 0) {
 				for(uint8_t i = DEVICE_NAME_LEN - rest_data_len;i < DEVICE_NAME_LEN;i++) {
 					node_arr.arr[AppData->Port - 3].device_name[i] = 0x00; 
@@ -900,7 +1031,7 @@ static void LORA_RxData(lora_AppData_t *AppData)
 				for(uint8_t i = 0;i<loop_num;i++) { // some thing can do here: for condition of "buffsize > datalen", can print a prompt message
 					node_arr.arr[AppData->Port - 3].device_data[i] = *(AppData->Buff + 1 + i);
 				}
-				uint8_t rest_data_len = DEVICE_DATA_LEN - (AppData->BuffSize - 1);
+				int16_t rest_data_len = DEVICE_DATA_LEN - (AppData->BuffSize - 1);
 				if(rest_data_len > 0) {
 					for(uint8_t i = DEVICE_DATA_LEN - rest_data_len;i < DEVICE_DATA_LEN;i++) {
 						node_arr.arr[AppData->Port - 3].device_data[i] = 0x00; 
@@ -908,10 +1039,11 @@ static void LORA_RxData(lora_AppData_t *AppData)
 				}
 				node_arr.arr[AppData->Port - 3].symbol_cnt |= 0x01;
 				node_arr.arr[AppData->Port - 3].rssi_according_to_device_data = get_rssi();
+				node_arr.arr[AppData->Port - 3].fport = AppData->Port;
 			}
 		}
 		if((node_arr.arr[AppData->Port - 3].symbol_cnt == 0x0F - 0x08) && (*(AppData->Buff + 0) != 0xF1) && (*(AppData->Buff + 0) != 0xF2) && (*(AppData->Buff + 0) != 0xF3)) {  // 0x0F is prepared for possible encription bit
-			for(uint8_t i = 0;i<DEVICE_TOTAL_LEN;i++) {
+			for(uint8_t i = 0;i<sizeof(device_total) / sizeof(device_total[0]);i++) {//DEVICE_TOTAL_LEN
 				if(i>=0 && i<ENCRIPTION_LEN)
 					device_total[i] = node_arr.arr[AppData->Port - 3].encription[i - 0];
 				else if(i>=ENCRIPTION_LEN && i<ENCRIPTION_LEN + DEVICE_NAME_LEN)
@@ -920,7 +1052,10 @@ static void LORA_RxData(lora_AppData_t *AppData)
 					device_total[i] = node_arr.arr[AppData->Port - 3].device_eui[i - ENCRIPTION_LEN - DEVICE_NAME_LEN];
 				else if(i>=ENCRIPTION_LEN + DEVICE_NAME_LEN + DEVICE_EUI_LEN && i<ENCRIPTION_LEN + DEVICE_NAME_LEN + DEVICE_EUI_LEN + DEVICE_DATA_LEN)
 					device_total[i] = node_arr.arr[AppData->Port - 3].device_data[i - ENCRIPTION_LEN - DEVICE_NAME_LEN - DEVICE_EUI_LEN];
+				else if(i>=ENCRIPTION_LEN + DEVICE_NAME_LEN + DEVICE_EUI_LEN + DEVICE_DATA_LEN && i<ENCRIPTION_LEN + DEVICE_NAME_LEN + DEVICE_EUI_LEN + DEVICE_DATA_LEN + FPORT_LEN)
+					device_total[i] = node_arr.arr[AppData->Port - 3].fport;
 			}
+			// device_total[ENCRIPTION_LEN + DEVICE_NAME_LEN + DEVICE_EUI_LEN + DEVICE_DATA_LEN + FPORT_LEN - 1] = AppData->Port;
 			if(node_arr.flags[AppData->Port - 3] == false) {
 				node_arr.flags[AppData->Port - 3] = true;
 				node_arr.num += 1;
@@ -934,7 +1069,7 @@ static void LORA_RxData(lora_AppData_t *AppData)
 				uart_send_data( UART2, (uint8_t)str1[i]);
 			for(uint8_t i = 0;i < strlen(str2);i++)
 				uart_send_data( UART2, (uint8_t)str2[i]);
-			for(uint8_t i = 0;i < DEVICE_TOTAL_LEN;i++) {
+			for(uint8_t i = 0;i < sizeof(device_total) / sizeof(device_total[0]);i++) {//DEVICE_TOTAL_LEN
 				LOG_PRINTF(LL_DEBUG, "%02X  ", device_total[i]);
 				
 				snprintf(compatible_p2p_format, sizeof(compatible_p2p_format), "%02x ", device_total[i]);

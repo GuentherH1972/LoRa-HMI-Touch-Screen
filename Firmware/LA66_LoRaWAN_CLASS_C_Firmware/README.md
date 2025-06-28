@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0] - 2025-06-21
+
+### Added
+
+- Added commands for activating LoRaWAN network, firmware type retrieval, and configuration information retrieval for ESP32.
+- Add support for Fport information to the panel data package sent to ESP32.
+- Added feedback on the execution of upward commands on the button panel.
+
+### Changed
+
+- Change the default mode of LoRaWAN for LA66 from CLASS A to CLASS C.
+
 ## [1.0.0] - 2025-04-28
 
 ### Added
