@@ -226,7 +226,7 @@ void ui_mainscreen_screen_init(void)
     lv_obj_set_height(ui_LabelIndoor, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_LabelIndoor, 20);
     lv_obj_set_y(ui_LabelIndoor, 0);
-    lv_label_set_text(ui_LabelIndoor, "Innen");
+    lv_label_set_text(ui_LabelIndoor, "Indoor");
     lv_obj_set_style_text_color(ui_LabelIndoor, lv_color_hex(0x94AEB4), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelIndoor, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelIndoor, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -248,7 +248,7 @@ void ui_mainscreen_screen_init(void)
     lv_obj_set_width(ui_LabelTemp, 400);
     lv_obj_set_height(ui_LabelTemp, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_LabelTemp, LV_ALIGN_LEFT_MID);
-    lv_label_set_text(ui_LabelTemp, "Temperatur");
+    lv_label_set_text(ui_LabelTemp, "Temperature");
     lv_obj_set_style_text_color(ui_LabelTemp, lv_color_hex(0x94AEB4), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelTemp, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelTemp, &lv_font_montserrat_48, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -280,7 +280,7 @@ void ui_mainscreen_screen_init(void)
     lv_obj_set_width(ui_LabelHum, 400);
     lv_obj_set_height(ui_LabelHum, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_LabelHum, LV_ALIGN_LEFT_MID);
-    lv_label_set_text(ui_LabelHum, "Feuchtigkeit");
+    lv_label_set_text(ui_LabelHum, "Humidity");
     lv_obj_set_style_text_color(ui_LabelHum, lv_color_hex(0x94AEB4), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelHum, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelHum, &lv_font_montserrat_48, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -323,7 +323,7 @@ void ui_mainscreen_screen_init(void)
     lv_obj_set_height(ui_LabelOutdoor, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_LabelOutdoor, 20);
     lv_obj_set_y(ui_LabelOutdoor, 0);
-    lv_label_set_text(ui_LabelOutdoor, "Aussen");
+    lv_label_set_text(ui_LabelOutdoor, "Outdoor");
     lv_obj_set_style_text_color(ui_LabelOutdoor, lv_color_hex(0x94AEB4), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelOutdoor, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelOutdoor, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -345,7 +345,7 @@ void ui_mainscreen_screen_init(void)
     lv_obj_set_width(ui_LabelExtTemp, 400);
     lv_obj_set_height(ui_LabelExtTemp, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_LabelExtTemp, LV_ALIGN_LEFT_MID);
-    lv_label_set_text(ui_LabelExtTemp, "Temperatur");
+    lv_label_set_text(ui_LabelExtTemp, "Temperature");
     lv_obj_set_style_text_color(ui_LabelExtTemp, lv_color_hex(0x94AEB4), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelExtTemp, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelExtTemp, &lv_font_montserrat_48, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -366,7 +366,7 @@ void ui_mainscreen_screen_init(void)
     lv_obj_set_x(ui_LabelTitle, 0);
     lv_obj_set_y(ui_LabelTitle, -5);
     lv_obj_set_align(ui_LabelTitle, LV_ALIGN_TOP_MID);
-    lv_label_set_text(ui_LabelTitle, "Glashaus");
+    lv_label_set_text(ui_LabelTitle, "LHT65N-E3");
     lv_obj_set_style_text_color(ui_LabelTitle, lv_color_hex(0x94AEB4), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelTitle, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_align(ui_LabelTitle, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
