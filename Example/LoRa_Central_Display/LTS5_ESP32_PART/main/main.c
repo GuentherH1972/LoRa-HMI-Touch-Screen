@@ -30,6 +30,9 @@
 #define FCTRL_ADRACKREQ 0x40
 #define FCTRL_ACK 0x20
 
+#define TEMP_LOW_LIMIT 200 // low temperature limit = 2.0 degrees
+#define TIME_LCD_ON_SEC 20
+
 typedef struct
 {
 	uint8_t mHdr;
@@ -89,8 +92,11 @@ static uint8_t frmPayloadPlain[100];
 static phyPayloadType phyPayloadStructUp;
 static macPayloadType macPayloadStructUp;
 static lht65nPayloadType lht65nValues;
-static time_t lht65n_lastReceive = 0;
+static time_t timeLHT65nLastReceive = 0;
+static time_t timeLastTouch = 0;
 static bool showNextRssi = false;
+static bool alarm_tempLow = false;
+static bool alarm_noReception = false;
 
 #define MAKE_UINT32(a, b, c, d) ((uint32_t)(a) + ((uint32_t)(b) << 8) + ((uint32_t)(c) << 16) + ((uint32_t)(d) << 24))
 #define MAKE_UINT16(a, b) ((uint16_t)(a) + ((uint16_t)(b) << 8))
@@ -379,16 +385,19 @@ void ShowLHT65NValues(lht65nPayloadType* values)
   lv_label_set_text_fmt(ui_LabelBattery, "%dmV", values->batvoltage);
   lv_slider_set_value(ui_SliderBattery, values->batvoltage, LV_ANIM_OFF);
 
-  if (values->temp < 200) // 2.0 degrees threshold
+	alarm_tempLow = values->temp < TEMP_LOW_LIMIT;
+  if (alarm_tempLow)
   {
     lv_obj_set_style_bg_opa(ui_PanelSensor, LV_OPA_COVER, LV_PART_MAIN | LV_STATE_DEFAULT);
+		// turn on LCD backlight
+    gpio_set_level(GPIO_LCD_BL, 1);
   }
   else
   {
     lv_obj_set_style_bg_opa(ui_PanelSensor, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
   }
   lv_obj_set_style_text_opa(ui_Attention, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
-  time(&lht65n_lastReceive);
+  time(&timeLHT65nLastReceive);
 }
 
 void ShowLHT65NRssi(int rssi)
@@ -524,20 +533,31 @@ void timer_callback(lv_timer_t *timer)
   time_t time_offset = time_now - time_last;
   if (time_offset > 1000000000) 
   {
-    lht65n_lastReceive += time_offset;
+    timeLHT65nLastReceive += time_offset;
+    timeLastTouch += time_offset;
   }
-  time_t sec_distance = time_now - lht65n_lastReceive;
+  time_t sec_sinceLastReceive = time_now - timeLHT65nLastReceive;
+  time_t sec_sinceLastTouch = time_now - timeLastTouch;
 
-  int days = sec_distance / (24 * 60 * 60);  
-  int hours = (sec_distance % (24 * 60 * 60)) / (60 * 60);  
-  int minutes = (sec_distance % (60 * 60)) / 60;  
-  int seconds = sec_distance % 60;
+  int days = sec_sinceLastReceive / (24 * 60 * 60);  
+  int hours = (sec_sinceLastReceive % (24 * 60 * 60)) / (60 * 60);  
+  int minutes = (sec_sinceLastReceive % (60 * 60)) / 60;  
+  int seconds = sec_sinceLastReceive % 60;
   lv_label_set_text_fmt(ui_LabelTimePassedValueTemHum, "%02d: %02d: %02d: %02d", days, hours, minutes, seconds);
 
-  if (sec_distance > (60 * 60))
+	alarm_noReception = sec_sinceLastReceive > (60 * 60);
+  if (alarm_noReception)
   {
     lv_obj_set_style_text_opa(ui_Attention, LV_OPA_COVER, LV_PART_MAIN | LV_STATE_DEFAULT);  
+		// turn on LCD backlight
+    gpio_set_level(GPIO_LCD_BL, 1);
   }
+
+	if (!alarm_noReception && !alarm_tempLow && sec_sinceLastTouch > TIME_LCD_ON_SEC)
+	{
+		// turn off LCD backlight
+    gpio_set_level(GPIO_LCD_BL, 0);
+	}
 }
 
 void Touch_IO_RST(void)
@@ -625,6 +645,13 @@ void lv_tick_task(void *arg)
   }
 }
 
+void ui_event_mainscreen(lv_event_t* e)
+{
+	time(&timeLastTouch);
+	// turn on LCD backlight
+  gpio_set_level(GPIO_LCD_BL, 1);
+}
+
 void app_main(void)
 {
   Touch_IO_RST();
@@ -634,6 +661,9 @@ void app_main(void)
   ESP_LOGI(TAG_MAIN, "init ok");
 
   ui_init();
+
+	time(&timeLastTouch);
+	lv_obj_add_event_cb(ui_mainscreen, ui_event_mainscreen, LV_EVENT_PRESSED, NULL);
 
   xTaskCreatePinnedToCore(esp_uart_recv_task, "esp_uart_recv_task", 1024 * 24, NULL, 6, NULL, 0);
   xTaskCreatePinnedToCore(lv_tick_task, "lv_tick_task", 1024 * 24, NULL, 7, NULL, 0);
